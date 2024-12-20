@@ -13,30 +13,48 @@ const transporter = nodemailer.createTransport({
 export const sendOfferEmail = async (
   buyerEmail: string,
   domainName: string,
-  offerAmount: number
+  offerAmount: number,
+  buyerName: string,
+  message?: string
 ) => {
-  // Send email to buyer
-  await transporter.sendMail({
-    from: 'woshi@wubaohu.com',
-    to: buyerEmail,
-    subject: `Your offer for ${domainName} has been received`,
-    html: `
-      <h1>Thank you for your offer!</h1>
-      <p>We have received your offer of $${offerAmount} for ${domainName}.</p>
-      <p>We will review your offer and get back to you soon.</p>
-    `
-  });
+  try {
+    // Send email to buyer
+    await transporter.sendMail({
+      from: 'woshi@wubaohu.com',
+      to: buyerEmail,
+      subject: `Your offer for ${domainName} has been received`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #6366f1;">Thank you for your offer!</h1>
+          <p>Dear ${buyerName},</p>
+          <p>We have received your offer of $${offerAmount.toLocaleString()} for ${domainName}.</p>
+          <p>We will review your offer and get back to you soon.</p>
+          ${message ? `<p>Your message: ${message}</p>` : ''}
+          <p>Best regards,<br>Domain Bazaar Team</p>
+        </div>
+      `
+    });
 
-  // Send email to admin
-  await transporter.sendMail({
-    from: 'woshi@wubaohu.com',
-    to: 'domain@nic.bn',
-    subject: `New offer received for ${domainName}`,
-    html: `
-      <h1>New Domain Offer</h1>
-      <p>Domain: ${domainName}</p>
-      <p>Offer Amount: $${offerAmount}</p>
-      <p>Buyer Email: ${buyerEmail}</p>
-    `
-  });
+    // Send email to admin
+    await transporter.sendMail({
+      from: 'woshi@wubaohu.com',
+      to: 'domain@nic.bn',
+      subject: `New offer received for ${domainName}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #6366f1;">New Domain Offer</h1>
+          <p><strong>Domain:</strong> ${domainName}</p>
+          <p><strong>Offer Amount:</strong> $${offerAmount.toLocaleString()}</p>
+          <p><strong>Buyer Name:</strong> ${buyerName}</p>
+          <p><strong>Buyer Email:</strong> ${buyerEmail}</p>
+          ${message ? `<p><strong>Message:</strong> ${message}</p>` : ''}
+        </div>
+      `
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Email sending failed:', error);
+    throw error;
+  }
 };

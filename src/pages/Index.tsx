@@ -16,21 +16,22 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
       <Navigation />
       
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-4 animate-fade-in">
+      <header className="relative overflow-hidden bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+        <div className="relative max-w-7xl mx-auto py-24 px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-5xl font-extrabold mb-6 animate-fade-in">
             Premium Domain Names
           </h1>
-          <p className="mt-2 text-xl text-gray-600 max-w-2xl mx-auto animate-fade-in">
+          <p className="text-xl text-purple-100 max-w-2xl mx-auto animate-fade-in">
             Find your perfect domain name and make it yours today
           </p>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto py-12">
+      <main className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <DomainList onMakeOffer={handleMakeOffer} />
         <OfferForm
           isOpen={isOfferFormOpen}
