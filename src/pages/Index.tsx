@@ -3,17 +3,30 @@ import Navigation from '@/components/Navigation';
 import DomainList from '@/components/DomainList';
 import OfferForm from '@/components/OfferForm';
 import Footer from '@/components/Footer';
+import FeaturedDomains from '@/components/FeaturedDomains';
 import { useToast } from '@/hooks/use-toast';
-import { Search } from 'lucide-react';
+import { Search, TrendingUp, DollarSign, Star } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const [isOfferFormOpen, setIsOfferFormOpen] = useState(false);
   const [selectedDomain, setSelectedDomain] = useState<{ name: string; price: number } | undefined>();
+  const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
 
   const handleMakeOffer = (domain: { name: string; price: number }) => {
     setSelectedDomain(domain);
     setIsOfferFormOpen(true);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Implement search functionality
+    toast({
+      title: "Search",
+      description: `Searching for domains matching: ${searchQuery}`,
+    });
   };
 
   return (
@@ -29,49 +42,70 @@ const Index = () => {
             <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
               Browse through our curated selection of premium domain names and secure your digital identity today.
             </p>
-            <div className="max-w-xl mx-auto">
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-gray-400" />
+            <form onSubmit={handleSearch} className="max-w-xl mx-auto">
+              <div className="relative flex gap-2">
+                <div className="flex-1 relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <Input
+                    type="text"
+                    className="pl-10 pr-3 py-6 text-lg"
+                    placeholder="Search for domain names..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
                 </div>
-                <input
-                  type="text"
-                  className="block w-full pl-10 pr-3 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white placeholder-gray-400 text-gray-900"
-                  placeholder="Search for domain names..."
-                />
+                <Button type="submit" size="lg" className="px-8">
+                  Search
+                </Button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
       </header>
 
       <main className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Available Domains</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg">
-              <div className="text-blue-600 font-semibold">Premium Domains</div>
-              <div className="text-3xl font-bold text-gray-900 mt-2">100+</div>
+        <FeaturedDomains onMakeOffer={handleMakeOffer} />
+        
+        <div className="mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
+              <div className="flex items-center gap-3 mb-2">
+                <TrendingUp className="h-6 w-6 text-blue-500" />
+                <h3 className="text-lg font-semibold">Trending Domains</h3>
+              </div>
+              <p className="text-gray-600">Discover the most popular domain names in our marketplace.</p>
             </div>
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-lg">
-              <div className="text-purple-600 font-semibold">Price Range</div>
-              <div className="text-3xl font-bold text-gray-900 mt-2">$100 - $10k</div>
+            <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
+              <div className="flex items-center gap-3 mb-2">
+                <DollarSign className="h-6 w-6 text-green-500" />
+                <h3 className="text-lg font-semibold">Special Offers</h3>
+              </div>
+              <p className="text-gray-600">Limited time deals on premium domain names.</p>
             </div>
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-lg">
-              <div className="text-green-600 font-semibold">Instant Transfer</div>
-              <div className="text-3xl font-bold text-gray-900 mt-2">24/7</div>
+            <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
+              <div className="flex items-center gap-3 mb-2">
+                <Star className="h-6 w-6 text-yellow-500" />
+                <h3 className="text-lg font-semibold">Premium Selection</h3>
+              </div>
+              <p className="text-gray-600">Hand-picked premium domains for your business.</p>
             </div>
           </div>
         </div>
-        
-        <DomainList onMakeOffer={handleMakeOffer} />
-        <OfferForm
-          isOpen={isOfferFormOpen}
-          onClose={() => setIsOfferFormOpen(false)}
-          selectedDomain={selectedDomain}
-        />
+
+        <div className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Available Domains</h2>
+          <DomainList onMakeOffer={handleMakeOffer} />
+        </div>
       </main>
+
+      <OfferForm
+        isOpen={isOfferFormOpen}
+        onClose={() => setIsOfferFormOpen(false)}
+        selectedDomain={selectedDomain}
+      />
 
       <Footer />
     </div>
