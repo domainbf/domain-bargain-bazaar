@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
-import { User, Menu, X } from 'lucide-react';
+import { User, Menu, X, LogOut } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,7 @@ import {
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
   
   const { data: session } = useQuery({
     queryKey: ['session'],
@@ -37,6 +38,11 @@ const Navigation = () => {
       return data;
     }
   });
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
 
   return (
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
@@ -78,7 +84,7 @@ const Navigation = () => {
                     <Link to="/profile">个人资料</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => supabase.auth.signOut()}
+                    onClick={handleLogout}
                     className="text-red-600"
                   >
                     退出登录
@@ -90,7 +96,7 @@ const Navigation = () => {
                 <Link to="/login">
                   <Button variant="outline">登录</Button>
                 </Link>
-                <Link to="/register">
+                <Link to="/login">
                   <Button>注册</Button>
                 </Link>
               </>
@@ -145,7 +151,7 @@ const Navigation = () => {
                 </Link>
                 <Button
                   variant="ghost"
-                  onClick={() => supabase.auth.signOut()}
+                  onClick={handleLogout}
                   className="w-full text-left text-red-600"
                 >
                   退出登录
@@ -160,7 +166,7 @@ const Navigation = () => {
                   登录
                 </Link>
                 <Link
-                  to="/register"
+                  to="/login"
                   className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 >
                   注册
