@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/carousel";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Globe, DollarSign } from 'lucide-react';
+import { Globe, DollarSign, Star } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface Domain {
   id: string;
@@ -43,7 +44,7 @@ const FeaturedDomains = ({ onMakeOffer }: FeaturedDomainsProps) => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center p-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-800"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
       </div>
     );
   }
@@ -53,40 +54,52 @@ const FeaturedDomains = ({ onMakeOffer }: FeaturedDomainsProps) => {
   }
 
   return (
-    <div className="mb-12">
-      <h2 className="text-2xl font-semibold text-gray-900 mb-6">Featured Domains</h2>
+    <div className="mb-20">
+      <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-2">
+        <Star className="h-8 w-8 text-yellow-400" />
+        <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-400">
+          精选域名
+        </span>
+      </h2>
       <Carousel className="w-full">
         <CarouselContent>
           {domains.map((domain) => (
             <CarouselItem key={domain.id} className="md:basis-1/2 lg:basis-1/3">
-              <Card className="p-6 bg-white border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg">
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <Globe className="h-5 w-5 text-blue-500" />
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {domain.name}
-                    </h3>
+              <motion.div whileHover={{ scale: 1.02 }} className="p-1">
+                <Card className="p-6 bg-gradient-to-br from-yellow-500/10 to-orange-600/10 backdrop-blur-lg border border-yellow-500/20">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Globe className="h-5 w-5 text-yellow-400" />
+                        <h3 className="text-lg font-semibold text-white">
+                          {domain.name}
+                        </h3>
+                      </div>
+                      <span className="px-2 py-1 text-xs font-semibold text-yellow-400 bg-yellow-400/10 rounded-full">
+                        精选
+                      </span>
+                    </div>
+                    <p className="text-gray-300 text-sm">{domain.description}</p>
+                    <div className="flex items-center space-x-2">
+                      <DollarSign className="h-5 w-5 text-green-400" />
+                      <span className="text-xl font-bold text-white">
+                        ${domain.price.toLocaleString()}
+                      </span>
+                    </div>
+                    <Button 
+                      onClick={() => onMakeOffer(domain)}
+                      className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white"
+                    >
+                      立即购买
+                    </Button>
                   </div>
-                  <p className="text-gray-600 text-sm">{domain.description}</p>
-                  <div className="flex items-center space-x-2">
-                    <DollarSign className="h-5 w-5 text-green-600" />
-                    <span className="text-xl font-bold text-green-600">
-                      ${domain.price.toLocaleString()}
-                    </span>
-                  </div>
-                  <Button 
-                    onClick={() => onMakeOffer(domain)}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    Make Offer
-                  </Button>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
+        <CarouselPrevious className="bg-white/10 text-white hover:bg-white/20 border-0" />
+        <CarouselNext className="bg-white/10 text-white hover:bg-white/20 border-0" />
       </Carousel>
     </div>
   );
