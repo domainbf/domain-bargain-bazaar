@@ -4,8 +4,9 @@ import DomainList from '@/components/DomainList';
 import OfferForm from '@/components/OfferForm';
 import Footer from '@/components/Footer';
 import FeaturedDomains from '@/components/FeaturedDomains';
+import ContactForm from '@/components/ContactForm';
 import { useToast } from '@/hooks/use-toast';
-import { Search, Sparkles, Globe2, Rocket } from 'lucide-react';
+import { Search, Sparkles, Globe2, Rocket, MessageSquare } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -124,6 +125,18 @@ const Index = () => {
             可用域名
           </h2>
           <DomainList onMakeOffer={handleMakeOffer} />
+        </div>
+
+        <div className="mb-20">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold text-white mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center gap-2">
+              <MessageSquare className="h-8 w-8" />
+              联系我们
+            </h2>
+            <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
+              <ContactForm />
+            </div>
+          </div>
         </div>
       </main>
 
