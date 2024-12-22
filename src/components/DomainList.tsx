@@ -46,7 +46,7 @@ const DomainList = ({ onMakeOffer }: { onMakeOffer: (domain: Domain) => void }) 
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: index * 0.1 }}
         >
-          <Card className="overflow-hidden bg-white/10 backdrop-blur-lg border border-white/20 hover:border-white/30 transition-all duration-300">
+          <Card className="overflow-hidden bg-black/40 backdrop-blur-lg border border-white/20 hover:border-white/30 transition-all duration-300">
             <div className="p-6 space-y-4">
               <div className="flex items-center space-x-2">
                 <Globe className="h-5 w-5 text-blue-400" />
@@ -54,15 +54,17 @@ const DomainList = ({ onMakeOffer }: { onMakeOffer: (domain: Domain) => void }) 
                   {domain.name}
                 </h3>
               </div>
-              <p className="text-gray-200 text-sm min-h-[3rem]">{domain.description}</p>
-              <div className="flex items-center justify-between">
+              <p className="text-gray-100 text-sm min-h-[3rem] bg-black/30 p-2 rounded-md">
+                {domain.description}
+              </p>
+              <div className="flex items-center justify-between bg-black/30 p-2 rounded-md">
                 <div className="flex items-center space-x-2">
                   <DollarSign className="h-5 w-5 text-green-400" />
                   <span className="text-xl font-bold text-white">
                     ${domain.price.toLocaleString()}
                   </span>
                 </div>
-                <div className="flex items-center text-gray-300 text-sm">
+                <div className="flex items-center text-gray-200 text-sm">
                   <Clock className="h-4 w-4 mr-1" />
                   新上架
                 </div>

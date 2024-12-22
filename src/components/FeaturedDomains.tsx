@@ -57,7 +57,7 @@ const FeaturedDomains = ({ onMakeOffer }: FeaturedDomainsProps) => {
     <div className="mb-20">
       <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-2">
         <Star className="h-8 w-8 text-yellow-400" />
-        <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-400">
+        <span className="text-white">
           精选域名
         </span>
       </h2>
@@ -66,7 +66,7 @@ const FeaturedDomains = ({ onMakeOffer }: FeaturedDomainsProps) => {
           {domains.map((domain) => (
             <CarouselItem key={domain.id} className="md:basis-1/2 lg:basis-1/3">
               <motion.div whileHover={{ scale: 1.02 }} className="p-1">
-                <Card className="p-6 bg-white/10 backdrop-blur-lg border border-white/20">
+                <Card className="p-6 bg-black/40 backdrop-blur-lg border border-white/20">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
@@ -79,8 +79,10 @@ const FeaturedDomains = ({ onMakeOffer }: FeaturedDomainsProps) => {
                         精选
                       </span>
                     </div>
-                    <p className="text-gray-200 text-sm min-h-[3rem]">{domain.description}</p>
-                    <div className="flex items-center space-x-2">
+                    <p className="text-gray-100 text-sm min-h-[3rem] bg-black/30 p-2 rounded-md">
+                      {domain.description}
+                    </p>
+                    <div className="flex items-center space-x-2 bg-black/30 p-2 rounded-md">
                       <DollarSign className="h-5 w-5 text-green-400" />
                       <span className="text-xl font-bold text-white">
                         ${domain.price.toLocaleString()}
@@ -98,8 +100,8 @@ const FeaturedDomains = ({ onMakeOffer }: FeaturedDomainsProps) => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="bg-white/10 text-white hover:bg-white/20 border-0" />
-        <CarouselNext className="bg-white/10 text-white hover:bg-white/20 border-0" />
+        <CarouselPrevious className="bg-black/40 text-white hover:bg-black/60 border-0" />
+        <CarouselNext className="bg-black/40 text-white hover:bg-black/60 border-0" />
       </Carousel>
     </div>
   );
