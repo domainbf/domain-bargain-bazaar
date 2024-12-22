@@ -10,12 +10,26 @@ import { Search, Sparkles, Globe2, Rocket, MessageSquare } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 const Index = () => {
   const [isOfferFormOpen, setIsOfferFormOpen] = useState(false);
   const [selectedDomain, setSelectedDomain] = useState<{ name: string; price: number } | undefined>();
   const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
+
+  const { data: siteSettings } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*');
+      
+      if (error) throw error;
+      return Object.fromEntries(data.map(item => [item.key, item.value]));
+    }
+  });
 
   const handleMakeOffer = (domain: { name: string; price: number }) => {
     setSelectedDomain(domain);
@@ -48,10 +62,10 @@ const Index = () => {
             className="text-center"
           >
             <h1 className="text-6xl font-bold text-white mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-              寻找完美的域名
+              {siteSettings?.hero_title || '寻找完美的域名'}
             </h1>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-12">
-              探索精选优质域名，为您的数字未来打造完美起点
+              {siteSettings?.hero_subtitle || '探索精选优质域名，为您的数字未来打造完美起点'}
             </p>
             <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
               <div className="relative flex gap-3">
