@@ -15,6 +15,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_featured: boolean | null
           name: string
           owner_id: string | null
           price: number
@@ -25,6 +26,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_featured?: boolean | null
           name: string
           owner_id?: string | null
           price: number
@@ -35,10 +37,38 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_featured?: boolean | null
           name?: string
           owner_id?: string | null
           price?: number
           status?: string | null
+        }
+        Relationships: []
+      }
+      pages: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          slug?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
