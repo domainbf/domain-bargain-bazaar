@@ -7,7 +7,7 @@ import DomainList from '@/components/admin/DomainList';
 import ContentManager from '@/components/admin/ContentManager';
 import PageManager from '@/components/admin/PageManager';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Globe, Settings, FileText, MessageSquare } from 'lucide-react';
+import { Globe, Settings, FileText } from 'lucide-react';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -21,6 +21,20 @@ const Admin = () => {
     }
   });
 
+  const { data: domains } = useQuery({
+    queryKey: ['admin-domains'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('domains')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session
+  });
+
   if (!isAuthenticated && !session) {
     return <LoginForm onLoginSuccess={() => setIsAuthenticated(true)} />;
   }
@@ -30,28 +44,24 @@ const Admin = () => {
       <h1 className="text-3xl font-bold mb-8">管理后台</h1>
       
       <Tabs defaultValue="domains" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="domains" className="flex items-center gap-2">
+        <TabsList className="bg-black/20 border border-white/10">
+          <TabsTrigger value="domains" className="flex items-center gap-2 data-[state=active]:bg-white/10">
             <Globe className="h-4 w-4" />
             域名管理
           </TabsTrigger>
-          <TabsTrigger value="pages" className="flex items-center gap-2">
+          <TabsTrigger value="pages" className="flex items-center gap-2 data-[state=active]:bg-white/10">
             <FileText className="h-4 w-4" />
             页面管理
           </TabsTrigger>
-          <TabsTrigger value="content" className="flex items-center gap-2">
+          <TabsTrigger value="content" className="flex items-center gap-2 data-[state=active]:bg-white/10">
             <Settings className="h-4 w-4" />
-            内容管理
-          </TabsTrigger>
-          <TabsTrigger value="feedback" className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4" />
-            反馈管理
+            网站设置
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="domains" className="space-y-6">
           <DomainForm onSuccess={() => {}} />
-          <DomainList domains={[]} />
+          <DomainList domains={domains || []} />
         </TabsContent>
 
         <TabsContent value="pages">
@@ -60,10 +70,6 @@ const Admin = () => {
 
         <TabsContent value="content">
           <ContentManager />
-        </TabsContent>
-
-        <TabsContent value="feedback">
-          <FeedbackManager />
         </TabsContent>
       </Tabs>
     </div>
