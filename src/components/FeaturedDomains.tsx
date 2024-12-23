@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Globe, DollarSign, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useToast } from '@/components/ui/use-toast';
 
 interface Domain {
   id: string;
@@ -22,10 +23,12 @@ interface Domain {
 }
 
 interface FeaturedDomainsProps {
-  onMakeOffer: (domain: { name: string; price: number }) => void;
+  onMakeOffer: (domain: Domain) => void;
 }
 
 const FeaturedDomains = ({ onMakeOffer }: FeaturedDomainsProps) => {
+  const { toast } = useToast();
+  
   const { data: domains, isLoading } = useQuery({
     queryKey: ['featured-domains'],
     queryFn: async () => {
@@ -33,10 +36,17 @@ const FeaturedDomains = ({ onMakeOffer }: FeaturedDomainsProps) => {
         .from('domains')
         .select('*')
         .eq('status', 'available')
-        .eq('category', 'featured')
-        .order('created_at', { ascending: false });
+        .eq('is_featured', true)
+        .order('price', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        toast({
+          title: "错误",
+          description: "无法加载精选域名",
+          variant: "destructive",
+        });
+        throw error;
+      }
       return data as Domain[];
     }
   });
@@ -57,7 +67,7 @@ const FeaturedDomains = ({ onMakeOffer }: FeaturedDomainsProps) => {
     <div className="mb-20">
       <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-2">
         <Star className="h-8 w-8 text-yellow-400" />
-        <span className="text-white">
+        <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
           精选域名
         </span>
       </h2>
@@ -65,7 +75,10 @@ const FeaturedDomains = ({ onMakeOffer }: FeaturedDomainsProps) => {
         <CarouselContent>
           {domains.map((domain) => (
             <CarouselItem key={domain.id} className="md:basis-1/2 lg:basis-1/3">
-              <motion.div whileHover={{ scale: 1.02 }} className="p-1">
+              <motion.div 
+                whileHover={{ scale: 1.02 }} 
+                className="p-1"
+              >
                 <Card className="p-6 bg-black/40 backdrop-blur-lg border border-white/20">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
