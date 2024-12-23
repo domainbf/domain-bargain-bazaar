@@ -12,6 +12,13 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const Index = () => {
   const [isOfferFormOpen, setIsOfferFormOpen] = useState(false);
@@ -28,6 +35,21 @@ const Index = () => {
       
       if (error) throw error;
       return Object.fromEntries(data.map(item => [item.key, item.value]));
+    }
+  });
+
+  const { data: trendingDomains } = useQuery({
+    queryKey: ['trending-domains'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('domains')
+        .select('*')
+        .eq('status', 'available')
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (error) throw error;
+      return data;
     }
   });
 
@@ -48,6 +70,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#1a1c2e] to-[#2a2d4a]">
       <Navigation />
       
+      {/* Hero Section */}
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 animate-gradient" />
@@ -94,11 +117,46 @@ const Index = () => {
         </div>
       </header>
 
+      {/* Trending Domains Banner */}
+      <div className="relative z-10 bg-black/30 backdrop-blur-md py-4 overflow-hidden border-t border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+              {trendingDomains?.map((domain) => (
+                <CarouselItem key={domain.id} className="md:basis-1/3 lg:basis-1/4">
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    className="p-2"
+                  >
+                    <div className="bg-white/5 backdrop-blur-lg rounded-lg p-4 border border-white/10">
+                      <div className="flex items-center justify-between">
+                        <span className="text-white font-medium">{domain.name}</span>
+                        <span className="text-green-400 font-bold">${domain.price}</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="bg-black/40 text-white hover:bg-black/60 border-0" />
+            <CarouselNext className="bg-black/40 text-white hover:bg-black/60 border-0" />
+          </Carousel>
+        </div>
+      </div>
+
       <main className="relative z-10 max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        {/* Featured Domains Section */}
         <div className="mb-20">
           <FeaturedDomains onMakeOffer={handleMakeOffer} />
         </div>
         
+        {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
           <motion.div 
             whileHover={{ scale: 1.02 }}
@@ -134,6 +192,7 @@ const Index = () => {
           </motion.div>
         </div>
 
+        {/* Available Domains Section */}
         <div className="mb-20">
           <h2 className="text-3xl font-bold text-white mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
             可用域名
@@ -141,6 +200,7 @@ const Index = () => {
           <DomainList onMakeOffer={handleMakeOffer} />
         </div>
 
+        {/* Contact Form Section */}
         <div className="mb-20">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-3xl font-bold text-white mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center gap-2">
