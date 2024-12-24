@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { Grid, Globe, Building2, Briefcase, Star } from 'lucide-react';
+import { Grid, Globe, Building2, Star } from 'lucide-react';
 
 const Categories = () => {
   const navigate = useNavigate();
@@ -14,14 +14,29 @@ const Categories = () => {
   const { data: categoryCounts } = useQuery({
     queryKey: ['category-counts'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('domains')
-        .select('category, count(*)')
-        .eq('status', 'available')
-        .group('category');
+      const counts = await Promise.all([
+        supabase
+          .from('domains')
+          .select('*', { count: 'exact' })
+          .eq('status', 'available')
+          .eq('category', 'premium'),
+        supabase
+          .from('domains')
+          .select('*', { count: 'exact' })
+          .eq('status', 'available')
+          .eq('category', 'business'),
+        supabase
+          .from('domains')
+          .select('*', { count: 'exact' })
+          .eq('status', 'available')
+          .eq('category', 'standard')
+      ]);
       
-      if (error) throw error;
-      return data;
+      return {
+        premium: counts[0].count || 0,
+        business: counts[1].count || 0,
+        standard: counts[2].count || 0
+      };
     }
   });
 
@@ -50,8 +65,7 @@ const Categories = () => {
   ];
 
   const getCount = (category: string) => {
-    const found = categoryCounts?.find(c => c.category === category);
-    return found?.count || 0;
+    return categoryCounts?.[category as keyof typeof categoryCounts] || 0;
   };
 
   return (
