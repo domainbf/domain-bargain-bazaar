@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Navigation from '@/components/Navigation';
 import DomainList from '@/components/DomainList';
-import OfferForm from '@/components/OfferForm';
 import Footer from '@/components/Footer';
 import FeaturedDomains from '@/components/FeaturedDomains';
 import ContactForm from '@/components/ContactForm';
@@ -13,9 +12,7 @@ import TrendingDomains from '@/components/home/TrendingDomains';
 import FeaturesGrid from '@/components/home/FeaturesGrid';
 
 const Index = () => {
-  const [isOfferFormOpen, setIsOfferFormOpen] = useState(false);
-  const [selectedDomain, setSelectedDomain] = useState<{ name: string; price: number } | undefined>();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = React.useState('');
 
   const { data: siteSettings } = useQuery({
     queryKey: ['site-settings'],
@@ -44,11 +41,6 @@ const Index = () => {
     }
   });
 
-  const handleMakeOffer = (domain: { name: string; price: number }) => {
-    setSelectedDomain(domain);
-    setIsOfferFormOpen(true);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a1c2e] to-[#2a2d4a]">
       <Navigation />
@@ -63,7 +55,7 @@ const Index = () => {
 
       <main className="relative z-10 max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="mb-20">
-          <FeaturedDomains onMakeOffer={handleMakeOffer} />
+          <FeaturedDomains />
         </div>
         
         <FeaturesGrid />
@@ -72,7 +64,7 @@ const Index = () => {
           <h2 className="text-3xl font-bold text-white mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
             可用域名
           </h2>
-          <DomainList onMakeOffer={handleMakeOffer} />
+          <DomainList />
         </div>
 
         <div className="mb-20">
@@ -87,12 +79,6 @@ const Index = () => {
           </div>
         </div>
       </main>
-
-      <OfferForm
-        isOpen={isOfferFormOpen}
-        onClose={() => setIsOfferFormOpen(false)}
-        selectedDomain={selectedDomain}
-      />
 
       <Footer />
     </div>

@@ -30,7 +30,7 @@ const Domains = () => {
           </h1>
         </div>
 
-        <DomainList onMakeOffer={() => {}} />
+        <DomainList />
       </main>
     </div>
   );
