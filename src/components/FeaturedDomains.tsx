@@ -1,13 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Globe, DollarSign, Star } from 'lucide-react';
@@ -71,51 +64,48 @@ const FeaturedDomains = ({ onMakeOffer }: FeaturedDomainsProps) => {
           精选域名
         </span>
       </h2>
-      <Carousel className="w-full">
-        <CarouselContent>
-          {domains.map((domain) => (
-            <CarouselItem key={domain.id} className="md:basis-1/2 lg:basis-1/3">
-              <motion.div 
-                whileHover={{ scale: 1.02 }} 
-                className="p-1"
-              >
-                <Card className="p-6 bg-black/40 backdrop-blur-lg border border-white/20">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Globe className="h-5 w-5 text-yellow-400" />
-                        <h3 className="text-lg font-semibold text-white">
-                          {domain.name}
-                        </h3>
-                      </div>
-                      <span className="px-2 py-1 text-xs font-semibold text-yellow-400 bg-yellow-400/10 rounded-full border border-yellow-400/20">
-                        精选
-                      </span>
-                    </div>
-                    <p className="text-gray-100 text-sm min-h-[3rem] bg-black/30 p-2 rounded-md">
-                      {domain.description}
-                    </p>
-                    <div className="flex items-center space-x-2 bg-black/30 p-2 rounded-md">
-                      <DollarSign className="h-5 w-5 text-green-400" />
-                      <span className="text-xl font-bold text-white">
-                        ${domain.price.toLocaleString()}
-                      </span>
-                    </div>
-                    <Button 
-                      onClick={() => onMakeOffer(domain)}
-                      className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold"
-                    >
-                      立即购买
-                    </Button>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {domains.map((domain) => (
+          <motion.div
+            key={domain.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            whileHover={{ scale: 1.02 }}
+          >
+            <Card className="p-6 bg-black/40 backdrop-blur-lg border border-white/20">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Globe className="h-5 w-5 text-yellow-400" />
+                    <h3 className="text-lg font-semibold text-white">
+                      {domain.name}
+                    </h3>
                   </div>
-                </Card>
-              </motion.div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious className="bg-black/40 text-white hover:bg-black/60 border-0" />
-        <CarouselNext className="bg-black/40 text-white hover:bg-black/60 border-0" />
-      </Carousel>
+                  <span className="px-2 py-1 text-xs font-semibold text-yellow-400 bg-yellow-400/10 rounded-full border border-yellow-400/20">
+                    精选
+                  </span>
+                </div>
+                <p className="text-gray-100 text-sm min-h-[3rem] bg-black/30 p-2 rounded-md">
+                  {domain.description}
+                </p>
+                <div className="flex items-center space-x-2 bg-black/30 p-2 rounded-md">
+                  <DollarSign className="h-5 w-5 text-green-400" />
+                  <span className="text-xl font-bold text-white">
+                    ${domain.price.toLocaleString()}
+                  </span>
+                </div>
+                <Button 
+                  onClick={() => onMakeOffer(domain)}
+                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold"
+                >
+                  立即购买
+                </Button>
+              </div>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 };
