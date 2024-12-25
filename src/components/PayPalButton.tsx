@@ -21,6 +21,7 @@ const PayPalButton = ({ amount, onSuccess }: PayPalButtonProps) => {
             purchase_units: [
               {
                 amount: {
+                  currency_code: "USD",
                   value: amount.toString(),
                 },
               },

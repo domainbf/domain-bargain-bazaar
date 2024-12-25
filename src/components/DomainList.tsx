@@ -103,7 +103,6 @@ const DomainList = () => {
             {selectedDomain && (
               <PayPalButton
                 amount={selectedDomain.price}
-                domainId={selectedDomain.id}
                 onSuccess={handlePaymentSuccess}
               />
             )}
