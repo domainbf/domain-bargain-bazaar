@@ -16,18 +16,18 @@ const Footer = () => {
           <div>
             <h4 className="text-sm font-semibold text-gray-900 mb-4">关于我们</h4>
             <ul className="space-y-3">
-              <li><a href="/page/about" className="text-gray-600 hover:text-gray-900 text-sm">公司介绍</a></li>
-              <li><a href="/page/careers" className="text-gray-600 hover:text-gray-900 text-sm">加入我们</a></li>
-              <li><a href="/page/contact" className="text-gray-600 hover:text-gray-900 text-sm">联系方式</a></li>
+              <li><a href="/about/company" className="text-gray-600 hover:text-gray-900 text-sm">公司介绍</a></li>
+              <li><a href="/about/join" className="text-gray-600 hover:text-gray-900 text-sm">加入我们</a></li>
+              <li><a href="/about/contact" className="text-gray-600 hover:text-gray-900 text-sm">联系方式</a></li>
             </ul>
           </div>
           
           <div>
             <h4 className="text-sm font-semibold text-gray-900 mb-4">帮助中心</h4>
             <ul className="space-y-3">
-              <li><a href="/page/news" className="text-gray-600 hover:text-gray-900 text-sm">新闻资讯</a></li>
-              <li><a href="/page/guide" className="text-gray-600 hover:text-gray-900 text-sm">使用指南</a></li>
-              <li><a href="/page/faq" className="text-gray-600 hover:text-gray-900 text-sm">常见问题</a></li>
+              <li><a href="/help/news" className="text-gray-600 hover:text-gray-900 text-sm">新闻资讯</a></li>
+              <li><a href="/help/guide" className="text-gray-600 hover:text-gray-900 text-sm">使用指南</a></li>
+              <li><a href="/help/faq" className="text-gray-600 hover:text-gray-900 text-sm">常见问题</a></li>
             </ul>
           </div>
           
