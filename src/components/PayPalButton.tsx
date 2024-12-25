@@ -1,41 +1,44 @@
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { PayPalButtons } from "@paypal/react-paypal-js";
 
 interface PayPalButtonProps {
   amount: number;
-  onSuccess: (details: any) => void;
+  onSuccess: () => void;
 }
 
 const PayPalButton = ({ amount, onSuccess }: PayPalButtonProps) => {
-  const initialOptions = {
-    clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || "test",
-    currency: "USD",
-    intent: "capture",
+  const createOrder = () => {
+    return fetch("/api/create-paypal-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount: amount,
+      }),
+    })
+      .then((response) => response.json())
+      .then((order) => order.id);
   };
 
   return (
-    <PayPalScriptProvider options={initialOptions}>
-      <PayPalButtons
-        style={{ layout: "horizontal" }}
-        createOrder={(data, actions) => {
-          return actions.order.create({
-            purchase_units: [
-              {
-                amount: {
-                  currency_code: "USD",
-                  value: amount.toString(),
-                },
-              },
-            ],
+    <PayPalButtons
+      createOrder={createOrder}
+      onApprove={(data) => {
+        return fetch("/api/capture-paypal-order", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            orderID: data.orderID,
+          }),
+        })
+          .then((response) => response.json())
+          .then(() => {
+            onSuccess();
           });
-        }}
-        onApprove={async (data, actions) => {
-          if (actions.order) {
-            const details = await actions.order.capture();
-            onSuccess(details);
-          }
-        }}
-      />
-    </PayPalScriptProvider>
+      }}
+    />
   );
 };
 

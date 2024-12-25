@@ -3,9 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Globe, DollarSign, Star } from 'lucide-react';
+import { Globe, DollarSign, Star, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/components/ui/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import PayPalButton from './PayPalButton';
 
 interface Domain {
   id: string;
@@ -17,6 +19,7 @@ interface Domain {
 
 const FeaturedDomains = () => {
   const { toast } = useToast();
+  const [selectedDomain, setSelectedDomain] = React.useState<Domain | null>(null);
   
   const { data: domains, isLoading } = useQuery({
     queryKey: ['featured-domains'],
@@ -30,7 +33,7 @@ const FeaturedDomains = () => {
       
       if (error) {
         toast({
-          title: "错误",
+          title: "错误提示",
           description: "无法加载精选域名",
           variant: "destructive",
         });
@@ -40,10 +43,22 @@ const FeaturedDomains = () => {
     }
   });
 
+  const handlePurchase = (domain: Domain) => {
+    setSelectedDomain(domain);
+  };
+
+  const handlePaymentSuccess = () => {
+    setSelectedDomain(null);
+    toast({
+      title: "购买成功",
+      description: "域名已成功购买，请前往个人中心查看",
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center p-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -54,10 +69,10 @@ const FeaturedDomains = () => {
 
   return (
     <div className="mb-20">
-      <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-2">
-        <Star className="h-8 w-8 text-yellow-400" />
-        <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-          精选域名
+      <h2 className="text-3xl font-bold mb-8 flex items-center gap-2">
+        <Crown className="h-8 w-8 text-yellow-400" />
+        <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+          精选优质域名
         </span>
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -67,40 +82,62 @@ const FeaturedDomains = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            whileHover={{ scale: 1.02 }}
+            className="domain-card"
           >
-            <Card className="p-6 bg-black/40 backdrop-blur-lg border border-white/20">
+            <Card className="p-6 bg-white dark:bg-gray-800 shadow-lg">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Globe className="h-5 w-5 text-yellow-400" />
-                    <h3 className="text-lg font-semibold text-white">
+                    <Globe className="h-5 w-5 text-primary" />
+                    <h3 className="text-lg font-semibold">
                       {domain.name}
                     </h3>
                   </div>
-                  <span className="px-2 py-1 text-xs font-semibold text-yellow-400 bg-yellow-400/10 rounded-full border border-yellow-400/20">
+                  <span className="price-tag bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100">
                     精选
                   </span>
                 </div>
-                <p className="text-gray-100 text-sm min-h-[3rem] bg-black/30 p-2 rounded-md">
-                  {domain.description}
+                <p className="text-gray-600 dark:text-gray-300 text-sm min-h-[3rem]">
+                  {domain.description || "优质域名，适合各类网站使用"}
                 </p>
-                <div className="flex items-center space-x-2 bg-black/30 p-2 rounded-md">
-                  <DollarSign className="h-5 w-5 text-green-400" />
-                  <span className="text-xl font-bold text-white">
-                    ${domain.price.toLocaleString()}
-                  </span>
+                <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                  <div className="flex items-center space-x-2">
+                    <DollarSign className="h-5 w-5 text-green-500" />
+                    <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                      ${domain.price.toLocaleString()}
+                    </span>
+                  </div>
+                  <Button 
+                    onClick={() => handlePurchase(domain)}
+                    className="bg-primary hover:bg-primary/90"
+                  >
+                    立即购买
+                  </Button>
                 </div>
-                <Button 
-                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold"
-                >
-                  立即购买
-                </Button>
               </div>
             </Card>
           </motion.div>
         ))}
       </div>
+
+      <Dialog open={!!selectedDomain} onOpenChange={() => setSelectedDomain(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>购买域名: {selectedDomain?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-lg font-semibold mb-4">
+              价格: ${selectedDomain?.price}
+            </p>
+            {selectedDomain && (
+              <PayPalButton
+                amount={selectedDomain.price}
+                onSuccess={handlePaymentSuccess}
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
