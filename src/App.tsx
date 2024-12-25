@@ -12,6 +12,9 @@ import Categories from "./pages/Categories";
 import Domains from "./pages/Domains";
 import AboutPage from "./pages/StaticPage/About";
 import HelpPage from "./pages/StaticPage/Help";
+import CompanyIntro from "./pages/StaticPage/About/CompanyIntro";
+import JoinUs from "./pages/StaticPage/About/JoinUs";
+import Contact from "./pages/StaticPage/About/Contact";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +34,9 @@ const App = () => (
           <Route path="/domains" element={<Domains />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/help" element={<HelpPage />} />
+          <Route path="/about/company" element={<CompanyIntro />} />
+          <Route path="/about/join" element={<JoinUs />} />
+          <Route path="/about/contact" element={<Contact />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
