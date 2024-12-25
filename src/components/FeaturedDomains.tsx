@@ -15,11 +15,7 @@ interface Domain {
   description: string;
 }
 
-interface FeaturedDomainsProps {
-  onMakeOffer: (domain: Domain) => void;
-}
-
-const FeaturedDomains = ({ onMakeOffer }: FeaturedDomainsProps) => {
+const FeaturedDomains = () => {
   const { toast } = useToast();
   
   const { data: domains, isLoading } = useQuery({
@@ -96,7 +92,6 @@ const FeaturedDomains = ({ onMakeOffer }: FeaturedDomainsProps) => {
                   </span>
                 </div>
                 <Button 
-                  onClick={() => onMakeOffer(domain)}
                   className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold"
                 >
                   立即购买

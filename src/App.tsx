@@ -10,6 +10,8 @@ import Dashboard from "./pages/Dashboard";
 import StaticPage from "./pages/StaticPage";
 import Categories from "./pages/Categories";
 import Domains from "./pages/Domains";
+import AboutPage from "./pages/StaticPage/About";
+import HelpPage from "./pages/StaticPage/Help";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +29,8 @@ const App = () => (
           <Route path="/page/:slug" element={<StaticPage />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/domains" element={<Domains />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/help" element={<HelpPage />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
