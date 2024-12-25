@@ -1,15 +1,14 @@
 import React from 'react';
 import Navigation from '@/components/Navigation';
-import DomainList from '@/components/DomainList';
 import Footer from '@/components/Footer';
-import FeaturedDomains from '@/components/FeaturedDomains';
-import ContactForm from '@/components/ContactForm';
 import { MessageSquare } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import HeroSection from '@/components/home/HeroSection';
 import TrendingDomains from '@/components/home/TrendingDomains';
 import FeaturesGrid from '@/components/home/FeaturesGrid';
+import ScrollingDomains from '@/components/home/ScrollingDomains';
+import ContactForm from '@/components/ContactForm';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -26,21 +25,6 @@ const Index = () => {
     }
   });
 
-  const { data: trendingDomains } = useQuery({
-    queryKey: ['trending-domains'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('domains')
-        .select('*')
-        .eq('status', 'available')
-        .order('created_at', { ascending: false })
-        .limit(10);
-      
-      if (error) throw error;
-      return data;
-    }
-  });
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a1c2e] to-[#2a2d4a]">
       <Navigation />
@@ -51,20 +35,30 @@ const Index = () => {
         setSearchQuery={setSearchQuery}
       />
 
-      <TrendingDomains domains={trendingDomains} />
+      <TrendingDomains domains={[]} />
 
       <main className="relative z-10 max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="mb-20">
-          <FeaturedDomains />
+          <h2 className="text-3xl font-bold text-white mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+            精品域名
+          </h2>
+          <ScrollingDomains direction="right" status="available" className="mb-8" />
         </div>
         
         <FeaturesGrid />
 
         <div className="mb-20">
           <h2 className="text-3xl font-bold text-white mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-            可用域名
+            一口价域名
           </h2>
-          <DomainList />
+          <ScrollingDomains direction="left" status="available" className="mb-8" />
+        </div>
+
+        <div className="mb-20">
+          <h2 className="text-3xl font-bold text-white mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+            最近售出
+          </h2>
+          <ScrollingDomains direction="right" status="sold" className="mb-8" />
         </div>
 
         <div className="mb-20">
