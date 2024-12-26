@@ -3,18 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Globe, DollarSign, Star, Crown, ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Globe, DollarSign, Star, Crown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/components/ui/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PayPalButton from './PayPalButton';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 
 interface Domain {
   id: string;
@@ -27,6 +20,7 @@ interface Domain {
 const FeaturedDomains = () => {
   const { toast } = useToast();
   const [selectedDomain, setSelectedDomain] = React.useState<Domain | null>(null);
+  const [currentIndex, setCurrentIndex] = React.useState(0);
   
   const { data: domains, isLoading } = useQuery({
     queryKey: ['featured-domains'],
@@ -49,6 +43,15 @@ const FeaturedDomains = () => {
       return data as Domain[];
     }
   });
+
+  React.useEffect(() => {
+    if (domains?.length) {
+      const interval = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % domains.length);
+      }, 2000);
+      return () => clearInterval(interval);
+    }
+  }, [domains?.length]);
 
   const handlePurchase = (domain: Domain) => {
     setSelectedDomain(domain);
@@ -74,6 +77,8 @@ const FeaturedDomains = () => {
     return null;
   }
 
+  const currentDomain = domains[currentIndex];
+
   return (
     <div className="mb-20">
       <h2 className="text-3xl font-bold mb-8 flex items-center gap-2">
@@ -83,65 +88,50 @@ const FeaturedDomains = () => {
         </span>
       </h2>
       
-      <Carousel
-        opts={{
-          align: "start",
-          loop: true,
-        }}
-        className="w-full"
-      >
-        <CarouselContent>
-          {domains.map((domain) => (
-            <CarouselItem key={domain.id} className="md:basis-1/2 lg:basis-1/3">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="p-2"
-              >
-                <Card className="p-6 bg-white dark:bg-gray-800 shadow-lg domain-card">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Globe className="h-5 w-5 text-primary" />
-                        <h3 className="text-lg font-semibold">
-                          {domain.name}
-                        </h3>
-                      </div>
-                      <span className="price-tag bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100">
-                        精选
-                      </span>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm min-h-[3rem]">
-                      {domain.description || "优质域名，适合各类网站使用"}
-                    </p>
-                    <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
-                      <div className="flex items-center space-x-2">
-                        <DollarSign className="h-5 w-5 text-green-500" />
-                        <span className="text-xl font-bold text-green-600 dark:text-green-400">
-                          ${domain.price.toLocaleString()}
-                        </span>
-                      </div>
-                      <Button 
-                        onClick={() => handlePurchase(domain)}
-                        className="bg-primary hover:bg-primary/90"
-                      >
-                        立即购买
-                      </Button>
-                    </div>
+      <div className="max-w-2xl mx-auto">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentDomain.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card className="p-6 bg-white dark:bg-gray-800 shadow-lg domain-card">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Globe className="h-5 w-5 text-primary" />
+                    <h3 className="text-lg font-semibold">
+                      {currentDomain.name}
+                    </h3>
                   </div>
-                </Card>
-              </motion.div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious className="hidden md:flex -left-12 bg-white/10 hover:bg-white/20 border-0">
-          <ChevronLeft className="h-6 w-6" />
-        </CarouselPrevious>
-        <CarouselNext className="hidden md:flex -right-12 bg-white/10 hover:bg-white/20 border-0">
-          <ChevronRight className="h-6 w-6" />
-        </CarouselNext>
-      </Carousel>
+                  <span className="price-tag bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100">
+                    精选
+                  </span>
+                </div>
+                <p className="text-gray-600 dark:text-gray-300 text-sm min-h-[3rem]">
+                  {currentDomain.description || "优质域名，适合各类网站使用"}
+                </p>
+                <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                  <div className="flex items-center space-x-2">
+                    <DollarSign className="h-5 w-5 text-green-500" />
+                    <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                      ${currentDomain.price.toLocaleString()}
+                    </span>
+                  </div>
+                  <Button 
+                    onClick={() => handlePurchase(currentDomain)}
+                    className="bg-primary hover:bg-primary/90"
+                  >
+                    立即购买
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       <Dialog open={!!selectedDomain} onOpenChange={() => setSelectedDomain(null)}>
         <DialogContent>
