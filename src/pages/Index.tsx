@@ -9,6 +9,7 @@ import TrendingDomains from '@/components/home/TrendingDomains';
 import FeaturesGrid from '@/components/home/FeaturesGrid';
 import ScrollingDomains from '@/components/home/ScrollingDomains';
 import ContactForm from '@/components/ContactForm';
+import FeaturedDomains from '@/components/FeaturedDomains';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -42,7 +43,7 @@ const Index = () => {
           <h2 className="text-3xl font-bold text-white mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
             精品域名
           </h2>
-          <ScrollingDomains direction="right" status="available" className="mb-8" />
+          <FeaturedDomains />
         </div>
         
         <FeaturesGrid />

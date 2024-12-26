@@ -26,7 +26,8 @@ const ScrollingDomains = ({ direction = 'left', status = 'available', className 
         .from('domains')
         .select('*')
         .eq('status', status)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(10);
       
       if (error) throw error;
       return data as Domain[];
