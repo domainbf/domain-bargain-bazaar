@@ -8,9 +8,17 @@ import ContentManager from '@/components/admin/ContentManager';
 import PageManager from '@/components/admin/PageManager';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Globe, Settings, FileText } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showDomainForm, setShowDomainForm] = useState(false);
 
   const { data: session } = useQuery({
     queryKey: ['session'],
@@ -60,8 +68,29 @@ const Admin = () => {
         </TabsList>
 
         <TabsContent value="domains" className="space-y-6">
-          <DomainForm onSuccess={() => {}} />
-          <DomainList domains={domains || []} />
+          <Card>
+            <CardHeader>
+              <CardTitle>添加新域名</CardTitle>
+              <CardDescription>
+                在这里添加新的域名到系统中。您可以设置域名的类别、价格和其他属性。
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DomainForm onSuccess={() => setShowDomainForm(false)} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>域名列表</CardTitle>
+              <CardDescription>
+                管理所有域名，包括编辑、删除和状态更新。
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DomainList domains={domains || []} />
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="pages">
