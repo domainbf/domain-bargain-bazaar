@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 import StaticPage from "./pages/StaticPage";
 import Categories from "./pages/Categories";
 import Domains from "./pages/Domains";
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/admin" element={<Admin />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/page/:slug" element={<StaticPage />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/domains" element={<Domains />} />
