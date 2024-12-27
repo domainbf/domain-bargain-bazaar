@@ -3,7 +3,9 @@ import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Globe, DollarSign } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface Domain {
   id: string;
@@ -19,6 +21,8 @@ interface ScrollingDomainsProps {
 }
 
 const ScrollingDomains = ({ direction = 'left', status = 'available', className = '' }: ScrollingDomainsProps) => {
+  const navigate = useNavigate();
+  
   const { data: domains, isLoading } = useQuery({
     queryKey: ['domains', status],
     queryFn: async () => {
@@ -46,7 +50,7 @@ const ScrollingDomains = ({ direction = 'left', status = 'available', className 
           x: direction === 'left' ? ['0%', '-50%'] : ['-50%', '0%'],
         }}
         transition={{
-          duration: 20,
+          duration: 30, // Slower scrolling speed
           repeat: Infinity,
           ease: 'linear',
         }}
@@ -67,9 +71,21 @@ const ScrollingDomains = ({ direction = 'left', status = 'available', className 
                   {status === 'sold' ? '已售出' : '一口价'}
                 </Badge>
               </div>
-              <div className="flex items-center text-green-400">
-                <DollarSign className="h-4 w-4" />
-                <span className="font-bold">{domain.price.toLocaleString()}</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center text-green-400">
+                  <DollarSign className="h-4 w-4" />
+                  <span className="font-bold">{domain.price.toLocaleString()}</span>
+                </div>
+                {status === 'available' && (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300"
+                    onClick={() => navigate(`/domains/${domain.id}`)}
+                  >
+                    立即购买
+                  </Button>
+                )}
               </div>
             </div>
           </div>

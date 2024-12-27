@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/components/ui/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PayPalButton from './PayPalButton';
+import { useNavigate } from 'react-router-dom';
 
 interface Domain {
   id: string;
@@ -19,6 +20,7 @@ interface Domain {
 
 const FeaturedDomains = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [selectedDomain, setSelectedDomain] = React.useState<Domain | null>(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   
@@ -48,7 +50,7 @@ const FeaturedDomains = () => {
     if (domains?.length) {
       const interval = setInterval(() => {
         setCurrentIndex((prev) => (prev + 1) % domains.length);
-      }, 2000);
+      }, 3000); // Slower rotation
       return () => clearInterval(interval);
     }
   }, [domains?.length]);
@@ -63,6 +65,7 @@ const FeaturedDomains = () => {
       title: "购买成功",
       description: "域名已成功购买，请前往个人中心查看",
     });
+    navigate('/dashboard');
   };
 
   if (isLoading) {
@@ -95,34 +98,34 @@ const FeaturedDomains = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.5 }}
           >
-            <Card className="p-6 bg-white dark:bg-gray-800 shadow-lg domain-card">
+            <Card className="p-6 bg-gradient-to-br from-purple-500/10 to-blue-500/10 backdrop-blur-lg border border-white/20 domain-card">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Globe className="h-5 w-5 text-primary" />
-                    <h3 className="text-lg font-semibold">
+                    <h3 className="text-lg font-semibold text-white">
                       {currentDomain.name}
                     </h3>
                   </div>
-                  <span className="price-tag bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100">
+                  <span className="px-2 py-1 rounded-full bg-yellow-400/20 text-yellow-300 text-sm font-medium">
                     精选
                   </span>
                 </div>
-                <p className="text-gray-600 dark:text-gray-300 text-sm min-h-[3rem]">
+                <p className="text-gray-300 text-sm min-h-[3rem]">
                   {currentDomain.description || "优质域名，适合各类网站使用"}
                 </p>
-                <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                <div className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
                   <div className="flex items-center space-x-2">
-                    <DollarSign className="h-5 w-5 text-green-500" />
-                    <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                    <DollarSign className="h-5 w-5 text-green-400" />
+                    <span className="text-xl font-bold text-green-400">
                       ${currentDomain.price.toLocaleString()}
                     </span>
                   </div>
                   <Button 
                     onClick={() => handlePurchase(currentDomain)}
-                    className="bg-primary hover:bg-primary/90"
+                    className="bg-blue-500 hover:bg-blue-600 text-white"
                   >
                     立即购买
                   </Button>
@@ -134,12 +137,12 @@ const FeaturedDomains = () => {
       </div>
 
       <Dialog open={!!selectedDomain} onOpenChange={() => setSelectedDomain(null)}>
-        <DialogContent>
+        <DialogContent className="bg-gradient-to-br from-gray-900 to-gray-800 border border-white/20">
           <DialogHeader>
-            <DialogTitle>购买域名: {selectedDomain?.name}</DialogTitle>
+            <DialogTitle className="text-white">购买域名: {selectedDomain?.name}</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-lg font-semibold mb-4">
+            <p className="text-lg font-semibold text-white mb-4">
               价格: ${selectedDomain?.price}
             </p>
             {selectedDomain && (
