@@ -8,13 +8,15 @@ interface PayPalButtonProps {
 const PayPalButton = ({ amount, onSuccess }: PayPalButtonProps) => {
   return (
     <PayPalScriptProvider options={{ 
-      "client-id": "test", // In production, this should be your PayPal client ID
-      currency: "USD"
+      clientId: "test", // Replace with your PayPal client ID in production
+      currency: "USD",
+      intent: "capture"
     }}>
       <PayPalButtons
         style={{ layout: "horizontal" }}
         createOrder={(data, actions) => {
           return actions.order.create({
+            intent: "CAPTURE",
             purchase_units: [
               {
                 amount: {

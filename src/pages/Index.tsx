@@ -10,20 +10,36 @@ import FeaturesGrid from '@/components/home/FeaturesGrid';
 import ScrollingDomains from '@/components/home/ScrollingDomains';
 import ContactForm from '@/components/ContactForm';
 import FeaturedDomains from '@/components/FeaturedDomains';
+import { useToast } from '@/components/ui/use-toast';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
+  const { toast } = useToast();
 
-  const { data: siteSettings } = useQuery({
+  const { data: siteSettings, error: settingsError } = useQuery({
     queryKey: ['site-settings'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('site_settings')
-        .select('*');
-      
-      if (error) throw error;
-      return Object.fromEntries(data.map(item => [item.key, item.value]));
-    }
+      try {
+        const { data, error } = await supabase
+          .from('site_settings')
+          .select('*');
+        
+        if (error) {
+          console.error('Error fetching site settings:', error);
+          toast({
+            title: "加载设置失败",
+            description: "无法加载网站设置，使用默认配置",
+            variant: "destructive",
+          });
+          return {};
+        }
+        return Object.fromEntries(data.map(item => [item.key, item.value]));
+      } catch (err) {
+        console.error('Error in site settings query:', err);
+        return {};
+      }
+    },
+    retry: 1,
   });
 
   return (
@@ -31,7 +47,7 @@ const Index = () => {
       <Navigation />
       
       <HeroSection 
-        siteSettings={siteSettings}
+        siteSettings={siteSettings || {}}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
       />
