@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Globe, DollarSign } from 'lucide-react';
+import { Globe2, DollarSign } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface Domain {
@@ -50,7 +49,7 @@ const ScrollingDomains = ({ direction = 'left', status = 'available', className 
           x: direction === 'left' ? ['0%', '-50%'] : ['-50%', '0%'],
         }}
         transition={{
-          duration: 30, // Slower scrolling speed
+          duration: 30,
           repeat: Infinity,
           ease: 'linear',
         }}
@@ -60,32 +59,18 @@ const ScrollingDomains = ({ direction = 'left', status = 'available', className 
           <div
             key={`${domain.id}-${index}`}
             className="inline-block px-2"
+            onClick={() => navigate(`/domains/${domain.id}`)}
           >
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4 w-72">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4 w-72 cursor-pointer hover:bg-white/10 transition-all">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <Globe className="h-4 w-4 text-blue-400" />
+                  <Globe2 className="h-4 w-4 text-blue-400" />
                   <span className="text-white font-medium">{domain.name}</span>
                 </div>
-                <Badge variant="secondary" className="bg-blue-500/20 text-blue-300">
-                  {status === 'sold' ? '已售出' : '一口价'}
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between">
                 <div className="flex items-center text-green-400">
                   <DollarSign className="h-4 w-4" />
                   <span className="font-bold">{domain.price.toLocaleString()}</span>
                 </div>
-                {status === 'available' && (
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300"
-                    onClick={() => navigate(`/domains/${domain.id}`)}
-                  >
-                    立即购买
-                  </Button>
-                )}
               </div>
             </div>
           </div>

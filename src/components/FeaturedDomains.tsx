@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Globe, DollarSign, Star, Crown } from 'lucide-react';
+import { Globe, DollarSign, Crown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/components/ui/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -50,7 +50,7 @@ const FeaturedDomains = () => {
     if (domains?.length) {
       const interval = setInterval(() => {
         setCurrentIndex((prev) => (prev + 1) % domains.length);
-      }, 3000); // Slower rotation
+      }, 3000);
       return () => clearInterval(interval);
     }
   }, [domains?.length]);
@@ -86,7 +86,7 @@ const FeaturedDomains = () => {
     <div className="mb-20">
       <h2 className="text-3xl font-bold mb-8 flex items-center gap-2">
         <Crown className="h-8 w-8 text-yellow-400" />
-        <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+        <span className="text-white">
           精选优质域名
         </span>
       </h2>
@@ -100,11 +100,11 @@ const FeaturedDomains = () => {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5 }}
           >
-            <Card className="p-6 bg-gradient-to-br from-purple-500/10 to-blue-500/10 backdrop-blur-lg border border-white/20 domain-card">
+            <Card className="p-6 bg-black/60 backdrop-blur-lg border border-white/20 hover:bg-black/70 transition-all">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Globe className="h-5 w-5 text-primary" />
+                    <Globe className="h-5 w-5 text-blue-400" />
                     <h3 className="text-lg font-semibold text-white">
                       {currentDomain.name}
                     </h3>
@@ -116,7 +116,7 @@ const FeaturedDomains = () => {
                 <p className="text-gray-300 text-sm min-h-[3rem]">
                   {currentDomain.description || "优质域名，适合各类网站使用"}
                 </p>
-                <div className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
+                <div className="flex items-center justify-between bg-white/10 p-3 rounded-lg">
                   <div className="flex items-center space-x-2">
                     <DollarSign className="h-5 w-5 text-green-400" />
                     <span className="text-xl font-bold text-green-400">
@@ -137,7 +137,7 @@ const FeaturedDomains = () => {
       </div>
 
       <Dialog open={!!selectedDomain} onOpenChange={() => setSelectedDomain(null)}>
-        <DialogContent className="bg-gradient-to-br from-gray-900 to-gray-800 border border-white/20">
+        <DialogContent className="bg-black/90 backdrop-blur-lg border border-white/20">
           <DialogHeader>
             <DialogTitle className="text-white">购买域名: {selectedDomain?.name}</DialogTitle>
           </DialogHeader>
