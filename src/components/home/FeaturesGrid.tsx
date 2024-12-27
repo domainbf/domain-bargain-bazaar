@@ -33,9 +33,9 @@ const FeaturesGrid = () => {
       >
         <div className="flex items-center gap-3 mb-3">
           <Rocket className="h-6 w-6 text-pink-400" />
-          <h3 className="text-lg font-semibold text-white">快速部署</h3>
+          <h3 className="text-lg font-semibold text-white">快速转移</h3>
         </div>
-        <p className="text-gray-300">便捷的域名转移和部署服务</p>
+        <p className="text-gray-300">收到付款后，立即安排转移程序</p>
       </motion.div>
     </div>
   );
