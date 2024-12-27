@@ -8,10 +8,12 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import PayPalButton from './PayPalButton';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Globe, DollarSign, ShieldCheck } from 'lucide-react';
 
 interface Domain {
   id: string;
@@ -92,19 +94,45 @@ const DomainList = () => {
       </div>
 
       <Dialog open={!!selectedDomain} onOpenChange={() => setSelectedDomain(null)}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-white to-gray-50">
           <DialogHeader>
-            <DialogTitle>购买域名: {selectedDomain?.name}</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <Globe className="h-6 w-6 text-blue-500" />
+              购买域名
+            </DialogTitle>
+            <DialogDescription className="text-gray-600">
+              您正在购买域名: <span className="font-semibold text-blue-600">{selectedDomain?.name}</span>
+            </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
-            <p className="text-lg font-semibold mb-4">
-              价格: ${selectedDomain?.price}
-            </p>
+          
+          <div className="p-6 space-y-6">
+            <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+              <div className="flex justify-between items-center mb-4">
+                <span className="text-gray-700 font-medium">域名价格</span>
+                <div className="flex items-center text-blue-600">
+                  <DollarSign className="h-5 w-5 mr-1" />
+                  <span className="text-2xl font-bold">{selectedDomain?.price}</span>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-2 text-sm text-gray-600">
+                <ShieldCheck className="h-5 w-5 text-green-500 mt-0.5" />
+                <p>
+                  支付完成后，域名将立即转入您的账户。我们提供安全的支付环境和完整的购买保障。
+                </p>
+              </div>
+            </div>
+
             {selectedDomain && (
-              <PayPalButton
-                amount={selectedDomain.price}
-                onSuccess={handlePaymentSuccess}
-              />
+              <div className="space-y-4">
+                <h4 className="font-medium text-gray-700">选择支付方式</h4>
+                <div className="bg-white p-4 rounded-lg border border-gray-200">
+                  <PayPalButton
+                    amount={selectedDomain.price}
+                    onSuccess={handlePaymentSuccess}
+                  />
+                </div>
+              </div>
             )}
           </div>
         </DialogContent>
