@@ -2,7 +2,6 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Globe, DollarSign, Crown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/components/ui/use-toast';
@@ -55,17 +54,35 @@ const FeaturedDomains = () => {
     }
   }, [domains?.length]);
 
-  const handlePurchase = (domain: Domain) => {
-    setSelectedDomain(domain);
-  };
+  const handlePurchaseSuccess = async () => {
+    if (selectedDomain) {
+      try {
+        const { error: transactionError } = await supabase
+          .from('transactions')
+          .insert({
+            domain_id: selectedDomain.id,
+            amount: selectedDomain.price,
+            payment_method: 'paypal',
+            status: 'completed'
+          });
 
-  const handlePaymentSuccess = () => {
-    setSelectedDomain(null);
-    toast({
-      title: "购买成功",
-      description: "域名已成功购买，请前往个人中心查看",
-    });
-    navigate('/dashboard');
+        if (transactionError) throw transactionError;
+
+        setSelectedDomain(null);
+        toast({
+          title: "购买成功",
+          description: "域名已成功购买，请前往个人中心查看",
+        });
+        navigate('/dashboard');
+      } catch (error) {
+        console.error('Transaction error:', error);
+        toast({
+          title: "错误",
+          description: "购买过程中出现错误，请稍后重试",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   if (isLoading) {
@@ -99,8 +116,9 @@ const FeaturedDomains = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5 }}
+            onClick={() => setSelectedDomain(currentDomain)}
           >
-            <Card className="p-6 bg-black/60 backdrop-blur-lg border border-white/20 hover:bg-black/70 transition-all">
+            <Card className="p-6 bg-black/60 backdrop-blur-lg border border-white/20 hover:bg-black/70 transition-all cursor-pointer">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
@@ -123,12 +141,6 @@ const FeaturedDomains = () => {
                       ${currentDomain.price.toLocaleString()}
                     </span>
                   </div>
-                  <Button 
-                    onClick={() => handlePurchase(currentDomain)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white"
-                  >
-                    立即购买
-                  </Button>
                 </div>
               </div>
             </Card>
@@ -148,7 +160,7 @@ const FeaturedDomains = () => {
             {selectedDomain && (
               <PayPalButton
                 amount={selectedDomain.price}
-                onSuccess={handlePaymentSuccess}
+                onSuccess={handlePurchaseSuccess}
               />
             )}
           </div>
