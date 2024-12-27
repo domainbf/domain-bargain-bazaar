@@ -37,10 +37,10 @@ const HeroSection = ({ siteSettings, searchQuery, setSearchQuery }: HeroSectionP
           className="text-center"
         >
           <h1 className="text-6xl font-bold text-white mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-            {siteSettings?.hero_title || '寻找完美的域名'}
+            {siteSettings?.hero_title || '域名市场'}
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-12">
-            {siteSettings?.hero_subtitle || '探索精选优质域名，为您的数字未来打造完美起点'}
+            {siteSettings?.hero_subtitle || '精选优质域名，为您的数字未来打造完美起点'}
           </p>
           <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
             <div className="relative flex gap-3">
@@ -51,7 +51,7 @@ const HeroSection = ({ siteSettings, searchQuery, setSearchQuery }: HeroSectionP
                 <Input
                   type="text"
                   className="w-full pl-11 pr-4 py-6 text-lg bg-white/10 border-gray-700 text-white placeholder-gray-400 backdrop-blur-lg"
-                  placeholder="搜索域名..."
+                  placeholder="输入你想获取的域名..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
