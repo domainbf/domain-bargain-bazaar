@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PayPalButton from '@/components/PayPalButton';
 import { useToast } from '@/components/ui/use-toast';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface Domain {
   id: string;
@@ -24,6 +25,7 @@ interface ScrollingDomainsProps {
 const ScrollingDomains = ({ direction = 'left', status = 'available', className = '' }: ScrollingDomainsProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [selectedDomain, setSelectedDomain] = React.useState<Domain | null>(null);
   
   const { data: domains, isLoading } = useQuery({
@@ -56,8 +58,8 @@ const ScrollingDomains = ({ direction = 'left', status = 'available', className 
         if (transactionError) throw transactionError;
 
         toast({
-          title: "购买成功",
-          description: "域名已成功购买，请前往个人中心查看",
+          title: t('purchase.success.title'),
+          description: t('purchase.success.description'),
         });
         
         setSelectedDomain(null);
@@ -65,8 +67,8 @@ const ScrollingDomains = ({ direction = 'left', status = 'available', className 
       } catch (error) {
         console.error('Transaction error:', error);
         toast({
-          title: "错误",
-          description: "购买过程中出现错误，请稍后重试",
+          title: t('purchase.error.title'),
+          description: t('purchase.error.description'),
           variant: "destructive",
         });
       }
@@ -95,7 +97,7 @@ const ScrollingDomains = ({ direction = 'left', status = 'available', className 
             <div
               key={`${domain.id}-${index}`}
               className="inline-block px-2"
-              onClick={() => setSelectedDomain(domain)}
+              onClick={() => status === 'available' && setSelectedDomain(domain)}
             >
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4 w-72 cursor-pointer hover:bg-white/10 transition-all">
                 <div className="flex items-center justify-between mb-2">
@@ -104,6 +106,13 @@ const ScrollingDomains = ({ direction = 'left', status = 'available', className 
                     <DollarSign className="h-4 w-4" />
                     <span className="font-bold">{domain.price.toLocaleString()}</span>
                   </div>
+                </div>
+                <div className="mt-2">
+                  <span className={`text-sm px-2 py-1 rounded-full ${
+                    status === 'sold' ? 'bg-red-400/20 text-red-300' : 'bg-green-400/20 text-green-300'
+                  }`}>
+                    {t(`domain.status.${status}`)}
+                  </span>
                 </div>
               </div>
             </div>
@@ -114,11 +123,13 @@ const ScrollingDomains = ({ direction = 'left', status = 'available', className 
       <Dialog open={!!selectedDomain} onOpenChange={() => setSelectedDomain(null)}>
         <DialogContent className="bg-black/90 backdrop-blur-lg border border-white/20">
           <DialogHeader>
-            <DialogTitle className="text-white">购买域名: {selectedDomain?.name}</DialogTitle>
+            <DialogTitle className="text-white">
+              {t('purchase.dialog.title')}: {selectedDomain?.name}
+            </DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <p className="text-lg font-semibold text-white mb-4">
-              价格: ${selectedDomain?.price}
+              {t('purchase.dialog.price')}: ${selectedDomain?.price}
             </p>
             {selectedDomain && (
               <PayPalButton

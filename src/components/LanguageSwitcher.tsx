@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface Language {
   code: string;
@@ -17,7 +18,7 @@ interface Language {
 }
 
 const LanguageSwitcher = () => {
-  const [currentLang, setCurrentLang] = React.useState('zh');
+  const { currentLang, changeLanguage } = useTranslation();
 
   const { data: languages } = useQuery({
     queryKey: ['languages'],
@@ -32,30 +33,9 @@ const LanguageSwitcher = () => {
     }
   });
 
-  const { data: translations } = useQuery({
-    queryKey: ['translations', currentLang],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('translations')
-        .select('*')
-        .eq('language_code', currentLang);
-      
-      if (error) throw error;
-      return data;
-    }
-  });
-
   const handleLanguageChange = (langCode: string) => {
-    setCurrentLang(langCode);
-    // Update translations in the app
-    if (translations) {
-      const translationMap = translations.reduce((acc: any, curr) => {
-        acc[curr.key] = curr.value;
-        return acc;
-      }, {});
-      window.localStorage.setItem('translations', JSON.stringify(translationMap));
-      window.dispatchEvent(new Event('languageChanged'));
-    }
+    changeLanguage(langCode);
+    window.dispatchEvent(new Event('languageChanged'));
   };
 
   return (
@@ -70,6 +50,7 @@ const LanguageSwitcher = () => {
           <DropdownMenuItem
             key={lang.code}
             onClick={() => handleLanguageChange(lang.code)}
+            className={currentLang === lang.code ? 'bg-accent' : ''}
           >
             {lang.name}
           </DropdownMenuItem>
