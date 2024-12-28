@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, DollarSign, Tag } from 'lucide-react';
+import { Globe, DollarSign, Tag, X } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -29,6 +29,13 @@ const PurchaseDialog = ({ domain, onOpenChange, onSuccess }: PurchaseDialogProps
   return (
     <Dialog open={!!domain} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-black/90 to-gray-900/90 backdrop-blur-lg border border-white/20">
+        <button
+          onClick={() => onOpenChange(false)}
+          className="absolute right-4 top-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+        >
+          <X className="h-5 w-5 text-white hover:text-white/80" />
+        </button>
+        
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white flex items-center gap-2">
             <Globe className="h-6 w-6 text-blue-400" />
@@ -57,11 +64,32 @@ const PurchaseDialog = ({ domain, onOpenChange, onSuccess }: PurchaseDialogProps
 
           <div className="space-y-4">
             <h4 className="font-medium text-white">选择支付方式</h4>
-            <div className="bg-white/5 p-4 rounded-lg border border-white/10">
-              <PayPalButton
-                amount={domain.price}
-                onSuccess={onSuccess}
-              />
+            <div className="grid gap-4">
+              <div className="bg-white/5 p-4 rounded-lg border border-white/10">
+                <h5 className="text-sm font-medium text-gray-300 mb-3">PayPal支付</h5>
+                <PayPalButton
+                  amount={domain.price}
+                  onSuccess={onSuccess}
+                />
+              </div>
+              
+              <div className="bg-white/5 p-4 rounded-lg border border-white/10">
+                <h5 className="text-sm font-medium text-gray-300 mb-3">支付宝支付</h5>
+                <button
+                  onClick={() => {
+                    // TODO: Implement Alipay integration
+                    console.log('Alipay payment clicked');
+                  }}
+                  className="w-full py-2 bg-[#00A1E9] text-white rounded-lg hover:bg-[#0093D6] transition-colors flex items-center justify-center gap-2"
+                >
+                  <img
+                    src="/alipay-logo.svg"
+                    alt="Alipay"
+                    className="h-5 w-5"
+                  />
+                  使用支付宝支付
+                </button>
+              </div>
             </div>
           </div>
         </div>
