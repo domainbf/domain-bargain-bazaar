@@ -4,6 +4,13 @@ const PAYPAL_API_URL = Deno.env.get('PAYPAL_API_URL') || 'https://api-m.sandbox.
 const PAYPAL_CLIENT_ID = Deno.env.get('PAYPAL_CLIENT_ID');
 const PAYPAL_SECRET_KEY = Deno.env.get('PAYPAL_SECRET_KEY');
 
+// Define CORS headers
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
+
 async function getAccessToken() {
   const auth = btoa(`${PAYPAL_CLIENT_ID}:${PAYPAL_SECRET_KEY}`);
   const response = await fetch(`${PAYPAL_API_URL}/v1/oauth2/token`, {
@@ -19,9 +26,18 @@ async function getAccessToken() {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      headers: corsHeaders
+    });
+  }
+
   try {
     const { amount } = await req.json();
     const accessToken = await getAccessToken();
+
+    console.log('Creating PayPal order for amount:', amount);
 
     const response = await fetch(`${PAYPAL_API_URL}/v2/checkout/orders`, {
       method: 'POST',
@@ -41,13 +57,22 @@ serve(async (req) => {
     });
 
     const data = await response.json();
+    console.log('PayPal order created:', data);
+
     return new Response(JSON.stringify(data), {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        ...corsHeaders,
+        'Content-Type': 'application/json'
+      },
     });
   } catch (error) {
+    console.error('Error creating PayPal order:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        ...corsHeaders,
+        'Content-Type': 'application/json'
+      },
     });
   }
 })
