@@ -11,6 +11,7 @@ interface Domain {
   category: string;
   description: string;
   status: string;
+  is_featured: boolean;
 }
 
 interface DomainCardProps {
