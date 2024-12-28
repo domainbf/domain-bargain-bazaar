@@ -13,6 +13,8 @@ interface Domain {
   price: number;
   category: string;
   description: string;
+  status: string;
+  is_featured: boolean;
 }
 
 const FeaturedDomains = () => {
