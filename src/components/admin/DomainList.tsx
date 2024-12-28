@@ -19,7 +19,7 @@ interface Domain {
   price: number;
   description: string | null;
   category: string;
-  status: 'available' | 'sold';
+  status: 'available' | 'sold' | 'reserved';
   is_featured: boolean;
 }
 
@@ -63,6 +63,17 @@ const DomainList = ({ domains }: DomainListProps) => {
     }
   };
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'sold':
+        return <Badge variant="secondary" className="bg-green-100 text-green-800">已售出</Badge>;
+      case 'reserved':
+        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">已预订</Badge>;
+      default:
+        return <Badge variant="secondary" className="bg-blue-100 text-blue-800">可购买</Badge>;
+    }
+  };
+
   return (
     <>
       <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
@@ -82,8 +93,9 @@ const DomainList = ({ domains }: DomainListProps) => {
                     </Badge>
                   )}
                   <Badge variant={domain.category === 'premium' ? 'default' : 'secondary'}>
-                    {domain.category === 'premium' ? '精品域名' : '一口价域名'}
+                    {domain.category === 'premium' ? '精品域名' : domain.category === 'business' ? '商业域名' : '一口价域名'}
                   </Badge>
+                  {getStatusBadge(domain.status)}
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {domain.description || "暂无描述"}

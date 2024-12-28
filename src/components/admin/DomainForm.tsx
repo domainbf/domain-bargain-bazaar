@@ -18,6 +18,7 @@ interface DomainFormProps {
     description: string;
     category: string;
     is_featured: boolean;
+    status: string;
   };
   mode?: 'create' | 'edit';
 }
@@ -29,6 +30,7 @@ const DomainForm = ({ onSuccess, initialData, mode = 'create' }: DomainFormProps
     description: initialData?.description || '',
     category: initialData?.category || 'standard',
     is_featured: initialData?.is_featured || false,
+    status: initialData?.status || 'available',
   });
   
   const { toast } = useToast();
@@ -45,6 +47,7 @@ const DomainForm = ({ onSuccess, initialData, mode = 'create' }: DomainFormProps
             description: data.description,
             category: data.category,
             is_featured: data.is_featured,
+            status: data.status,
           })
           .eq('id', initialData.id);
         
@@ -58,7 +61,7 @@ const DomainForm = ({ onSuccess, initialData, mode = 'create' }: DomainFormProps
             description: data.description,
             category: data.category,
             is_featured: data.is_featured,
-            status: 'available',
+            status: data.status,
           }]);
         
         if (error) throw error;
@@ -76,6 +79,7 @@ const DomainForm = ({ onSuccess, initialData, mode = 'create' }: DomainFormProps
         description: '',
         category: 'standard',
         is_featured: false,
+        status: 'available',
       });
       onSuccess();
     },
@@ -153,18 +157,35 @@ const DomainForm = ({ onSuccess, initialData, mode = 'create' }: DomainFormProps
             <SelectContent>
               <SelectItem value="standard">一口价域名</SelectItem>
               <SelectItem value="premium">精品域名</SelectItem>
+              <SelectItem value="business">商业域名</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="is_featured"
-            checked={formData.is_featured}
-            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_featured: checked }))}>
-          </Switch>
-          <Label htmlFor="is_featured">设为精选域名</Label>
+        <div className="space-y-2">
+          <Label htmlFor="status">状态</Label>
+          <Select
+            value={formData.status}
+            onValueChange={(value) => setFormData(prev => ({ ...prev, status: value }))}>
+            <SelectTrigger>
+              <SelectValue placeholder="选择状态" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="available">可购买</SelectItem>
+              <SelectItem value="sold">已售出</SelectItem>
+              <SelectItem value="reserved">已预订</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="is_featured"
+          checked={formData.is_featured}
+          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_featured: checked }))}>
+        </Switch>
+        <Label htmlFor="is_featured">设为精选域名</Label>
       </div>
 
       <Button type="submit" className="w-full">
