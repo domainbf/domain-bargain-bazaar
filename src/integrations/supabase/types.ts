@@ -9,6 +9,45 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      dns_records: {
+        Row: {
+          created_at: string | null
+          id: string
+          priority: number | null
+          record_type: Database["public"]["Enums"]["dns_record_type"]
+          status: Database["public"]["Enums"]["dns_record_status"] | null
+          subdomain: string
+          target: string
+          ttl: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          priority?: number | null
+          record_type: Database["public"]["Enums"]["dns_record_type"]
+          status?: Database["public"]["Enums"]["dns_record_status"] | null
+          subdomain: string
+          target: string
+          ttl?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          priority?: number | null
+          record_type?: Database["public"]["Enums"]["dns_record_type"]
+          status?: Database["public"]["Enums"]["dns_record_status"] | null
+          subdomain?: string
+          target?: string
+          ttl?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       domains: {
         Row: {
           category: string | null
@@ -273,7 +312,16 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      dns_record_status: "active" | "pending" | "disabled"
+      dns_record_type:
+        | "A"
+        | "AAAA"
+        | "CNAME"
+        | "MX"
+        | "TXT"
+        | "NS"
+        | "SRV"
+        | "CAA"
     }
     CompositeTypes: {
       [_ in never]: never
