@@ -48,39 +48,122 @@ export type Database = {
         }
         Relationships: []
       }
+      domain_history: {
+        Row: {
+          action: string
+          created_at: string
+          domain_id: string
+          id: string
+          new_status: string | null
+          performed_by: string | null
+          previous_status: string | null
+          price_change: number | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          domain_id: string
+          id?: string
+          new_status?: string | null
+          performed_by?: string | null
+          previous_status?: string | null
+          price_change?: number | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          domain_id?: string
+          id?: string
+          new_status?: string | null
+          performed_by?: string | null
+          previous_status?: string | null
+          price_change?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "domain_history_domain_id_fkey"
+            columns: ["domain_id"]
+            isOneToOne: false
+            referencedRelation: "domains"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       domains: {
         Row: {
+          buy_now_price: number | null
           category: string | null
           created_at: string
           description: string | null
+          expiry_date: string | null
+          featured_rank: number | null
           id: string
           is_featured: boolean | null
+          keywords: string[] | null
+          last_verified_at: string | null
+          meta_description: string | null
+          meta_title: string | null
+          minimum_offer: number | null
           name: string
           owner_id: string | null
+          payment_plans: Json | null
+          previous_sales: Json | null
           price: number
+          registrar: string | null
+          registration_date: string | null
           status: string | null
+          traffic_stats: Json | null
+          verification_status: string | null
         }
         Insert: {
+          buy_now_price?: number | null
           category?: string | null
           created_at?: string
           description?: string | null
+          expiry_date?: string | null
+          featured_rank?: number | null
           id?: string
           is_featured?: boolean | null
+          keywords?: string[] | null
+          last_verified_at?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          minimum_offer?: number | null
           name: string
           owner_id?: string | null
+          payment_plans?: Json | null
+          previous_sales?: Json | null
           price: number
+          registrar?: string | null
+          registration_date?: string | null
           status?: string | null
+          traffic_stats?: Json | null
+          verification_status?: string | null
         }
         Update: {
+          buy_now_price?: number | null
           category?: string | null
           created_at?: string
           description?: string | null
+          expiry_date?: string | null
+          featured_rank?: number | null
           id?: string
           is_featured?: boolean | null
+          keywords?: string[] | null
+          last_verified_at?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          minimum_offer?: number | null
           name?: string
           owner_id?: string | null
+          payment_plans?: Json | null
+          previous_sales?: Json | null
           price?: number
+          registrar?: string | null
+          registration_date?: string | null
           status?: string | null
+          traffic_stats?: Json | null
+          verification_status?: string | null
         }
         Relationships: []
       }
@@ -322,6 +405,21 @@ export type Database = {
         | "NS"
         | "SRV"
         | "CAA"
+      domain_category:
+        | "standard"
+        | "premium"
+        | "business"
+        | "numeric"
+        | "short"
+        | "brandable"
+        | "keyword"
+      domain_status:
+        | "available"
+        | "sold"
+        | "reserved"
+        | "pending"
+        | "expired"
+        | "premium"
     }
     CompositeTypes: {
       [_ in never]: never
