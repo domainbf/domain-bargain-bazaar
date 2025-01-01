@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, DollarSign, Tag, X } from 'lucide-react';
+import { Globe, DollarSign, ShoppingCart, CreditCard, Check } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -8,6 +8,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import PayPalButton from '../PayPalButton';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 interface Domain {
   id: string;
@@ -24,32 +26,47 @@ interface PurchaseDialogProps {
 }
 
 const PurchaseDialog = ({ domain, onOpenChange, onSuccess }: PurchaseDialogProps) => {
+  const { data: siteSettings } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*')
+        .in('key', [
+          'purchase_dialog_title',
+          'purchase_dialog_description',
+          'purchase_price_label',
+          'purchase_security_message',
+          'purchase_payment_title'
+        ]);
+      
+      if (error) throw error;
+      return Object.fromEntries(data.map(item => [item.key, item.value]));
+    }
+  });
+
   if (!domain) return null;
 
   return (
     <Dialog open={!!domain} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-black/90 to-gray-900/90 backdrop-blur-lg border border-white/20">
-        <button
-          onClick={() => onOpenChange(false)}
-          className="absolute right-4 top-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-        >
-          <X className="h-5 w-5 text-white hover:text-white/80" />
-        </button>
-        
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white flex items-center gap-2">
-            <Globe className="h-6 w-6 text-blue-400" />
-            购买域名
+            <ShoppingCart className="h-6 w-6 text-blue-400" />
+            {siteSettings?.purchase_dialog_title || "购买域名"}
           </DialogTitle>
           <DialogDescription className="text-gray-300">
-            您正在购买域名: <span className="font-semibold text-blue-400">{domain.name}</span>
+            {siteSettings?.purchase_dialog_description || "您正在购买域名:"} 
+            <span className="font-semibold text-blue-400 ml-1">{domain.name}</span>
           </DialogDescription>
         </DialogHeader>
         
         <div className="p-6 space-y-6">
           <div className="bg-white/5 p-4 rounded-lg border border-white/10">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-gray-300 font-medium">域名价格</span>
+              <span className="text-gray-300 font-medium">
+                {siteSettings?.purchase_price_label || "域名价格"}
+              </span>
               <div className="flex items-center text-green-400">
                 <DollarSign className="h-5 w-5 mr-1" />
                 <span className="text-2xl font-bold">${domain.price}</span>
@@ -57,38 +74,23 @@ const PurchaseDialog = ({ domain, onOpenChange, onSuccess }: PurchaseDialogProps
             </div>
             
             <div className="flex items-start gap-2 text-sm text-gray-300">
-              <Tag className="h-5 w-5 text-blue-400 mt-0.5" />
-              <p>类别: <span className="font-semibold">{domain.category || '标准'}</span></p>
+              <Check className="h-5 w-5 text-green-400 mt-0.5" />
+              <p>{siteSettings?.purchase_security_message || 
+                "支付完成后，域名将立即转入您的账户。我们提供安全的支付环境和完整的购买保障。"}</p>
             </div>
           </div>
 
           <div className="space-y-4">
-            <h4 className="font-medium text-white">选择支付方式</h4>
+            <h4 className="font-medium text-white flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-blue-400" />
+              {siteSettings?.purchase_payment_title || "选择支付方式"}
+            </h4>
             <div className="grid gap-4">
               <div className="bg-white/5 p-4 rounded-lg border border-white/10">
-                <h5 className="text-sm font-medium text-gray-300 mb-3">PayPal支付</h5>
                 <PayPalButton
                   amount={domain.price}
                   onSuccess={onSuccess}
                 />
-              </div>
-              
-              <div className="bg-white/5 p-4 rounded-lg border border-white/10">
-                <h5 className="text-sm font-medium text-gray-300 mb-3">支付宝支付</h5>
-                <button
-                  onClick={() => {
-                    // TODO: Implement Alipay integration
-                    console.log('Alipay payment clicked');
-                  }}
-                  className="w-full py-2 bg-[#00A1E9] text-white rounded-lg hover:bg-[#0093D6] transition-colors flex items-center justify-center gap-2"
-                >
-                  <img
-                    src="/alipay-logo.svg"
-                    alt="Alipay"
-                    className="h-5 w-5"
-                  />
-                  使用支付宝支付
-                </button>
               </div>
             </div>
           </div>
