@@ -31,16 +31,21 @@ const ScrollingDomains = ({ direction = 'left', status = 'available', className 
   const { data: domains, isLoading } = useQuery({
     queryKey: ['domains', status],
     queryFn: async () => {
+      console.log('Fetching domains with status:', status);
       const { data, error } = await supabase
         .from('domains')
         .select('*')
         .eq('status', status)
-        .order('created_at', { ascending: false })
-        .limit(10);
+        .order('created_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching domains:', error);
+        throw error;
+      }
+      console.log('Fetched domains:', data);
       return data as Domain[];
-    }
+    },
+    refetchInterval: 5000, // 每5秒刷新一次
   });
 
   const handlePurchaseSuccess = async () => {
@@ -56,6 +61,14 @@ const ScrollingDomains = ({ direction = 'left', status = 'available', className 
           });
 
         if (transactionError) throw transactionError;
+
+        // 更新域名状态
+        const { error: domainError } = await supabase
+          .from('domains')
+          .update({ status: 'sold' })
+          .eq('id', selectedDomain.id);
+
+        if (domainError) throw domainError;
 
         toast({
           title: t('purchase.success.title'),
@@ -75,7 +88,21 @@ const ScrollingDomains = ({ direction = 'left', status = 'available', className 
     }
   };
 
-  if (isLoading || !domains?.length) return null;
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center p-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+      </div>
+    );
+  }
+
+  if (!domains?.length) {
+    return (
+      <div className="text-center p-4 text-gray-400">
+        {status === 'available' ? '暂无可用域名' : '暂无已售域名'}
+      </div>
+    );
+  }
 
   const scrollContent = [...domains, ...domains];
 
