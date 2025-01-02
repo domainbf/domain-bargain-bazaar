@@ -1,16 +1,20 @@
 import React from 'react';
 import { Crown } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { useFeaturedDomains } from '@/hooks/useFeaturedDomains';
 import { LoadingState } from '@/components/ui/loading-state';
 import { ErrorState } from '@/components/ui/error-state';
 import DomainCard from './featured/DomainCard';
-import PurchaseDialog from './featured/PurchaseDialog';
+import PurchaseDialog from './shared/PurchaseDialog';
+import { useDomainPurchase } from '@/hooks/useDomainPurchase';
 
 const FeaturedDomains = () => {
-  const navigate = useNavigate();
-  const [selectedDomain, setSelectedDomain] = React.useState(null);
   const { data: domains, isLoading, error, refetch } = useFeaturedDomains();
+  const { 
+    selectedDomain, 
+    setSelectedDomain, 
+    isProcessing, 
+    handlePurchase 
+  } = useDomainPurchase();
 
   if (isLoading) {
     return <LoadingState message="正在加载精选域名..." />;
@@ -49,10 +53,8 @@ const FeaturedDomains = () => {
       <PurchaseDialog
         domain={selectedDomain}
         onOpenChange={() => setSelectedDomain(null)}
-        onSuccess={() => {
-          setSelectedDomain(null);
-          navigate('/dashboard');
-        }}
+        onSuccess={handlePurchase}
+        isProcessing={isProcessing}
       />
     </div>
   );
