@@ -1,106 +1,32 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
 import { Crown } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { useFeaturedDomains } from '@/hooks/useFeaturedDomains';
+import { LoadingState } from '@/components/ui/loading-state';
+import { ErrorState } from '@/components/ui/error-state';
 import DomainCard from './featured/DomainCard';
 import PurchaseDialog from './featured/PurchaseDialog';
 
-interface Domain {
-  id: string;
-  name: string;
-  price: number;
-  category: string;
-  description: string;
-  status: string;
-  is_featured: boolean;
-}
-
 const FeaturedDomains = () => {
-  const { toast } = useToast();
   const navigate = useNavigate();
-  const [selectedDomain, setSelectedDomain] = React.useState<Domain | null>(null);
-  const [currentIndex, setCurrentIndex] = React.useState(0);
-  
-  const { data: domains, isLoading } = useQuery({
-    queryKey: ['featured-domains'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('domains')
-        .select('*')
-        .eq('status', 'available')
-        .eq('is_featured', true)
-        .order('price', { ascending: false });
-      
-      if (error) {
-        toast({
-          title: "错误提示",
-          description: "无法加载精选域名",
-          variant: "destructive",
-        });
-        throw error;
-      }
-      return data as Domain[];
-    }
-  });
-
-  React.useEffect(() => {
-    if (domains?.length) {
-      const interval = setInterval(() => {
-        setCurrentIndex((prev) => (prev + 1) % domains.length);
-      }, 3000);
-      return () => clearInterval(interval);
-    }
-  }, [domains?.length]);
-
-  const handlePurchaseSuccess = async () => {
-    if (selectedDomain) {
-      try {
-        const { error: transactionError } = await supabase
-          .from('transactions')
-          .insert({
-            domain_id: selectedDomain.id,
-            amount: selectedDomain.price,
-            payment_method: 'paypal',
-            status: 'completed'
-          });
-
-        if (transactionError) throw transactionError;
-
-        setSelectedDomain(null);
-        toast({
-          title: "购买成功",
-          description: "域名已成功购买，请前往个人中心查看",
-        });
-        navigate('/dashboard');
-      } catch (error) {
-        console.error('Transaction error:', error);
-        toast({
-          title: "错误",
-          description: "购买过程中出现错误，请稍后重试",
-          variant: "destructive",
-        });
-      }
-    }
-  };
+  const [selectedDomain, setSelectedDomain] = React.useState(null);
+  const { data: domains, isLoading, error, refetch } = useFeaturedDomains();
 
   if (isLoading) {
+    return <LoadingState message="正在加载精选域名..." />;
+  }
+
+  if (error) {
     return (
-      <div className="flex justify-center items-center p-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
+      <ErrorState 
+        message="加载精选域名时出错" 
+        onRetry={() => refetch()} 
+      />
     );
   }
 
   if (!domains?.length) {
     return null;
-  }
-
-  // Calculate visible domains based on screen size
-  const visibleDomains = domains.slice(currentIndex, currentIndex + 3);
-  if (visibleDomains.length < 3) {
-    visibleDomains.push(...domains.slice(0, 3 - visibleDomains.length));
   }
 
   return (
@@ -111,7 +37,7 @@ const FeaturedDomains = () => {
       </h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {visibleDomains.map((domain) => (
+        {domains.map((domain) => (
           <DomainCard
             key={domain.id}
             domain={domain}
@@ -123,7 +49,10 @@ const FeaturedDomains = () => {
       <PurchaseDialog
         domain={selectedDomain}
         onOpenChange={() => setSelectedDomain(null)}
-        onSuccess={handlePurchaseSuccess}
+        onSuccess={() => {
+          setSelectedDomain(null);
+          navigate('/dashboard');
+        }}
       />
     </div>
   );

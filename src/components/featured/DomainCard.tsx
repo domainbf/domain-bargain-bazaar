@@ -3,16 +3,7 @@ import { motion } from 'framer-motion';
 import { Globe, DollarSign } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { useTranslation } from '@/hooks/useTranslation';
-
-interface Domain {
-  id: string;
-  name: string;
-  price: number;
-  category: string;
-  description: string;
-  status: string;
-  is_featured: boolean;
-}
+import type { Domain } from '@/hooks/useFeaturedDomains';
 
 interface DomainCardProps {
   domain: Domain;
@@ -42,6 +33,7 @@ const DomainCard = ({ domain, onClick }: DomainCardProps) => {
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.5 }}
       onClick={() => onClick(domain)}
+      className="h-full"
     >
       <Card className="p-6 bg-black/60 backdrop-blur-lg border border-white/20 hover:bg-black/70 transition-all cursor-pointer h-full">
         <div className="space-y-4">
@@ -52,20 +44,15 @@ const DomainCard = ({ domain, onClick }: DomainCardProps) => {
                 {domain.name}
               </h3>
             </div>
-            <div className="flex gap-2">
-              <span className={`px-2 py-1 rounded-full text-sm font-medium ${getCategoryColor(domain.category)}`}>
-                {t(`domain.category.${domain.category.toLowerCase()}`)}
-              </span>
-              {domain.status === 'sold' && (
-                <span className="px-2 py-1 rounded-full text-sm font-medium bg-red-400/20 text-red-300">
-                  {t('domain.status.sold')}
-                </span>
-              )}
-            </div>
+            <span className={`px-2 py-1 rounded-full text-sm font-medium ${getCategoryColor(domain.category)}`}>
+              {t(`domain.category.${domain.category.toLowerCase()}`)}
+            </span>
           </div>
+          
           <p className="text-gray-300 text-sm min-h-[3rem]">
             {domain.description || t('domain.no_description')}
           </p>
+          
           <div className="flex items-center justify-between bg-white/10 p-3 rounded-lg">
             <div className="flex items-center space-x-2">
               <DollarSign className="h-5 w-5 text-green-400" />
