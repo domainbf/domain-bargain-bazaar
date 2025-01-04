@@ -89,6 +89,50 @@ export type Database = {
           },
         ]
       }
+      domain_offers: {
+        Row: {
+          amount: number
+          buyer_id: string | null
+          created_at: string | null
+          domain_id: string | null
+          id: string
+          message: string | null
+          seller_id: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          buyer_id?: string | null
+          created_at?: string | null
+          domain_id?: string | null
+          id?: string
+          message?: string | null
+          seller_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          buyer_id?: string | null
+          created_at?: string | null
+          domain_id?: string | null
+          id?: string
+          message?: string | null
+          seller_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "domain_offers_domain_id_fkey"
+            columns: ["domain_id"]
+            isOneToOne: false
+            referencedRelation: "domains"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       domains: {
         Row: {
           buy_now_price: number | null
@@ -225,6 +269,11 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          is_seller: boolean | null
+          payment_info: Json | null
+          seller_rating: number | null
+          seller_verified: boolean | null
+          total_sales: number | null
           updated_at: string
           username: string | null
         }
@@ -234,6 +283,11 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id: string
+          is_seller?: boolean | null
+          payment_info?: Json | null
+          seller_rating?: number | null
+          seller_verified?: boolean | null
+          total_sales?: number | null
           updated_at?: string
           username?: string | null
         }
@@ -243,6 +297,11 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          is_seller?: boolean | null
+          payment_info?: Json | null
+          seller_rating?: number | null
+          seller_verified?: boolean | null
+          total_sales?: number | null
           updated_at?: string
           username?: string | null
         }
