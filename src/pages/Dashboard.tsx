@@ -81,8 +81,7 @@ const Dashboard = () => {
                 <h2 className="text-xl font-semibold text-white mb-4">我的域名</h2>
                 <DomainSalesList />
               </Card>
-            </Card>
-          </TabsContent>
+            </TabsContent>
           )}
         </Tabs>
       </main>
