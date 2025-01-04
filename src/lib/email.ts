@@ -15,7 +15,7 @@ export const sendEmail = async ({
   html: string;
 }) => {
   try {
-    const { data: { session } } = await supabase.auth.getSession();
+    console.log('Attempting to send email to:', to);
     
     const response = await supabase.functions.invoke('send-email', {
       body: {
@@ -30,6 +30,7 @@ export const sendEmail = async ({
       throw new Error(response.error.message || 'Failed to send email');
     }
 
+    console.log('Email sent successfully:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error sending email:', error);
@@ -38,6 +39,7 @@ export const sendEmail = async ({
 };
 
 export const sendWelcomeEmail = async (email: string, confirmationUrl: string) => {
+  console.log('Sending welcome email to:', email);
   await sendEmail({
     to: [email],
     subject: '欢迎加入 Domain.BF - 请验证您的邮箱',
