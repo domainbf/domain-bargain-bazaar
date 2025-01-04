@@ -8,7 +8,6 @@ const corsHeaders = {
 };
 
 interface EmailRequest {
-  from: string;
   to: string[];
   subject: string;
   html: string;
@@ -28,7 +27,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "NIC.BN <domain@nic.bn>",
+        from: "Domain.BF <noreply@domain.bf>",
         to: emailRequest.to,
         subject: emailRequest.subject,
         html: emailRequest.html,
