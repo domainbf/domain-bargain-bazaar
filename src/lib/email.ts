@@ -1,4 +1,9 @@
 import { supabase } from './supabase';
+import {
+  getWelcomeEmailTemplate,
+  getPasswordResetTemplate,
+  getEmailChangeConfirmationTemplate
+} from './emailTemplates';
 
 export const sendEmail = async ({
   to,
@@ -37,6 +42,30 @@ export const sendEmail = async ({
     console.error('Error sending email:', error);
     throw error;
   }
+};
+
+export const sendWelcomeEmail = async (email: string, confirmationUrl: string) => {
+  await sendEmail({
+    to: [email],
+    subject: '欢迎加入 Domain.BF - 请验证您的邮箱',
+    html: getWelcomeEmailTemplate(email, confirmationUrl),
+  });
+};
+
+export const sendPasswordResetEmail = async (email: string, resetUrl: string) => {
+  await sendEmail({
+    to: [email],
+    subject: 'Domain.BF - 重置密码请求',
+    html: getPasswordResetTemplate(resetUrl),
+  });
+};
+
+export const sendEmailChangeConfirmation = async (newEmail: string, confirmationUrl: string) => {
+  await sendEmail({
+    to: [newEmail],
+    subject: 'Domain.BF - 确认更改邮箱地址',
+    html: getEmailChangeConfirmationTemplate(newEmail, confirmationUrl),
+  });
 };
 
 export const sendFeedbackEmail = async (feedback: {
