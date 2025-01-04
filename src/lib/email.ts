@@ -17,27 +17,20 @@ export const sendEmail = async ({
   try {
     const { data: { session } } = await supabase.auth.getSession();
     
-    const response = await fetch(
-      'https://trqxaizkwuizuhlfmdup.supabase.co/functions/v1/send-email',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.access_token}`,
-        },
-        body: JSON.stringify({
-          to,
-          subject,
-          html,
-        }),
-      }
-    );
+    const response = await supabase.functions.invoke('send-email', {
+      body: {
+        to,
+        subject,
+        html,
+      },
+    });
 
-    if (!response.ok) {
-      throw new Error('Failed to send email');
+    if (response.error) {
+      console.error('Error response from send-email function:', response.error);
+      throw new Error(response.error.message || 'Failed to send email');
     }
 
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error('Error sending email:', error);
     throw error;
