@@ -4,12 +4,12 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { Globe, DollarSign, ShieldCheck } from 'lucide-react';
+import { Globe, DollarSign, ShieldCheck, CreditCard, ArrowRight } from 'lucide-react';
 import PayPalButton from '../PayPalButton';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { cn } from '@/lib/utils';
 
 interface Domain {
   id: string;
@@ -53,38 +53,59 @@ const PurchaseDialog = ({
 
   return (
     <Dialog open={!!domain} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-black/90 to-gray-900/90 backdrop-blur-lg border border-white/20">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-white flex items-center gap-2">
-            <Globe className="h-6 w-6 text-blue-400" />
-            {settings?.purchase_dialog_title || "购买域名"}
-          </DialogTitle>
-          <DialogDescription className="text-gray-300">
-            {settings?.purchase_dialog_description || "您正在购买域名:"} 
-            <span className="font-semibold text-blue-400 ml-1">{domain.name}</span>
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[600px] p-0 bg-white overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-3xl font-bold flex items-center gap-3 mb-2">
+              <Globe className="h-8 w-8" />
+              {domain.name}
+            </DialogTitle>
+            <p className="text-lg font-medium opacity-90">
+              {settings?.purchase_dialog_description || "This domain is available for purchase"}
+            </p>
+          </DialogHeader>
+        </div>
         
         <div className="p-6 space-y-6">
-          <div className="bg-white/5 p-4 rounded-lg border border-white/10">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-gray-300 font-medium">域名价格</span>
-              <div className="flex items-center text-green-400">
-                <DollarSign className="h-5 w-5 mr-1" />
-                <span className="text-2xl font-bold">${domain.price}</span>
+          {/* Price Section */}
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100">
+            <div className="space-y-1">
+              <p className="text-gray-600 font-medium">Purchase Price</p>
+              <div className="flex items-center text-gray-900">
+                <DollarSign className="h-6 w-6 text-blue-600" />
+                <span className="text-3xl font-bold">{domain.price.toLocaleString()}</span>
+                <span className="ml-2 text-gray-500">USD</span>
               </div>
             </div>
-            
-            <div className="flex items-start gap-2 text-sm text-gray-300">
-              <ShieldCheck className="h-5 w-5 text-green-400 mt-0.5" />
-              <p>{settings?.purchase_security_message || 
-                "支付完成后，域名将立即转入您的账户。我们提供安全的支付环境和完整的购买保障。"}</p>
+            <div className="flex items-center gap-2 text-blue-600">
+              <ArrowRight className="h-5 w-5" />
+              <span className="font-medium">Buy Now</span>
             </div>
           </div>
 
+          {/* Security Message */}
+          <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-100">
+            <ShieldCheck className="h-6 w-6 text-green-600 mt-1" />
+            <div className="space-y-1">
+              <p className="font-medium text-green-800">Secure Purchase</p>
+              <p className="text-green-700 text-sm">
+                {settings?.purchase_security_message || 
+                "Your purchase is protected by our secure payment system. The domain will be automatically transferred to your account upon successful payment."}
+              </p>
+            </div>
+          </div>
+
+          {/* Payment Section */}
           <div className="space-y-4">
-            <h4 className="font-medium text-white">选择支付方式</h4>
-            <div className="bg-white/5 p-4 rounded-lg border border-white/10">
+            <div className="flex items-center gap-2 text-gray-800">
+              <CreditCard className="h-5 w-5 text-blue-600" />
+              <h4 className="font-medium">Select Payment Method</h4>
+            </div>
+            
+            <div className={cn(
+              "bg-white rounded-lg border border-gray-200 p-4",
+              isProcessing && "opacity-50 pointer-events-none"
+            )}>
               <PayPalButton
                 amount={domain.price}
                 onSuccess={onSuccess}
@@ -92,6 +113,11 @@ const PurchaseDialog = ({
               />
             </div>
           </div>
+
+          {/* Additional Info */}
+          <p className="text-sm text-gray-500 text-center">
+            By proceeding with the purchase, you agree to our terms of service and domain transfer policy.
+          </p>
         </div>
       </DialogContent>
     </Dialog>
