@@ -5,11 +5,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Globe, DollarSign, ShieldCheck, CreditCard, ArrowRight } from 'lucide-react';
+import { Globe, DollarSign, ShieldCheck, CreditCard, ArrowRight, Check } from 'lucide-react';
 import PayPalButton from '../PayPalButton';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/hooks/useTranslation';
+import { motion } from 'framer-motion';
 
 interface Domain {
   id: string;
@@ -30,80 +32,97 @@ const PurchaseDialog = ({
   onSuccess,
   isProcessing 
 }: PurchaseDialogProps) => {
-  const { data: settings } = useQuery({
-    queryKey: ['site-settings', 'purchase-dialog'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('site_settings')
-        .select('*')
-        .in('key', [
-          'purchase_dialog_title',
-          'purchase_dialog_description',
-          'purchase_security_message'
-        ]);
-      
-      if (error) throw error;
-      return Object.fromEntries(data.map(item => [item.key, item.value]));
-    },
-    retry: 3,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
+  const { t } = useTranslation();
 
   if (!domain) return null;
 
   return (
     <Dialog open={!!domain} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] p-0 bg-white overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white">
-          <DialogHeader>
-            <DialogTitle className="text-3xl font-bold flex items-center gap-3 mb-2">
-              <Globe className="h-8 w-8" />
-              {domain.name}
-            </DialogTitle>
-            <p className="text-lg font-medium opacity-90">
-              {settings?.purchase_dialog_description || "This domain is available for purchase"}
-            </p>
+      <DialogContent className="sm:max-w-[700px] p-0 bg-gradient-to-br from-slate-50 to-white overflow-hidden rounded-xl">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" />
+          <DialogHeader className="relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <Globe className="h-8 w-8 text-blue-200" />
+                <span className="text-sm font-medium text-blue-200">{t('purchase_dialog_title')}</span>
+              </div>
+              <DialogTitle className="text-4xl font-bold tracking-tight mb-2">
+                {domain.name}
+              </DialogTitle>
+              <p className="text-xl text-blue-100 font-medium">
+                {t('secure_your_domain')}
+              </p>
+            </motion.div>
           </DialogHeader>
         </div>
         
-        <div className="p-6 space-y-6">
+        <div className="p-8 space-y-6">
           {/* Price Section */}
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="flex items-center justify-between p-6 bg-gradient-to-br from-slate-50 to-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow"
+          >
             <div className="space-y-1">
-              <p className="text-gray-600 font-medium">Purchase Price</p>
-              <div className="flex items-center text-gray-900">
-                <DollarSign className="h-6 w-6 text-blue-600" />
-                <span className="text-3xl font-bold">{domain.price.toLocaleString()}</span>
-                <span className="ml-2 text-gray-500">USD</span>
+              <p className="text-slate-600 font-medium">{t('purchase_price_label')}</p>
+              <div className="flex items-baseline">
+                <DollarSign className="h-8 w-8 text-green-600 mr-1" />
+                <span className="text-4xl font-bold text-slate-900">{domain.price.toLocaleString()}</span>
+                <span className="ml-2 text-slate-500 text-lg">USD</span>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-blue-600">
+            <div className="flex items-center gap-2 text-blue-600 font-semibold">
+              <span>{t('buy_now_button')}</span>
               <ArrowRight className="h-5 w-5" />
-              <span className="font-medium">Buy Now</span>
             </div>
-          </div>
+          </motion.div>
 
           {/* Security Message */}
-          <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-100">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            className="flex items-start gap-4 p-6 bg-green-50 rounded-xl border border-green-100"
+          >
             <ShieldCheck className="h-6 w-6 text-green-600 mt-1" />
             <div className="space-y-1">
-              <p className="font-medium text-green-800">Secure Purchase</p>
+              <p className="font-semibold text-green-800">{t('secure_transaction')}</p>
               <p className="text-green-700 text-sm">
-                {settings?.purchase_security_message || 
-                "Your purchase is protected by our secure payment system. The domain will be automatically transferred to your account upon successful payment."}
+                {t('purchase_security_message')}
               </p>
+              <div className="flex gap-4 mt-3">
+                <div className="flex items-center gap-2 text-green-700">
+                  <Check className="h-4 w-4" />
+                  <span className="text-sm">{t('instant_transfer')}</span>
+                </div>
+                <div className="flex items-center gap-2 text-green-700">
+                  <Check className="h-4 w-4" />
+                  <span className="text-sm">{t('money_back_guarantee')}</span>
+                </div>
+              </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Payment Section */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-gray-800">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+            className="space-y-4"
+          >
+            <div className="flex items-center gap-3 text-slate-800">
               <CreditCard className="h-5 w-5 text-blue-600" />
-              <h4 className="font-medium">Select Payment Method</h4>
+              <h4 className="font-medium">{t('payment_method_label')}</h4>
             </div>
             
             <div className={cn(
-              "bg-white rounded-lg border border-gray-200 p-4",
+              "bg-white rounded-xl border border-slate-200 p-6 shadow-sm",
               isProcessing && "opacity-50 pointer-events-none"
             )}>
               <PayPalButton
@@ -112,11 +131,11 @@ const PurchaseDialog = ({
                 disabled={isProcessing}
               />
             </div>
-          </div>
+          </motion.div>
 
-          {/* Additional Info */}
-          <p className="text-sm text-gray-500 text-center">
-            By proceeding with the purchase, you agree to our terms of service and domain transfer policy.
+          {/* Terms Notice */}
+          <p className="text-sm text-slate-500 text-center">
+            {t('terms_notice')}
           </p>
         </div>
       </DialogContent>

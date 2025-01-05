@@ -4,21 +4,22 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface HeroSectionProps {
-  siteSettings: Record<string, string> | undefined;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
 }
 
-const HeroSection = ({ siteSettings, searchQuery, setSearchQuery }: HeroSectionProps) => {
+const HeroSection = ({ searchQuery, setSearchQuery }: HeroSectionProps) => {
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
-      title: "搜索中",
-      description: `正在搜索: ${searchQuery}`,
+      title: t('searching'),
+      description: `${t('searching_for')}: ${searchQuery}`,
     });
   };
 
@@ -37,10 +38,10 @@ const HeroSection = ({ siteSettings, searchQuery, setSearchQuery }: HeroSectionP
           className="text-center"
         >
           <h1 className="text-6xl font-bold text-white mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-            {siteSettings?.hero_title || '域名市场'}
+            {t('hero_title')}
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-12">
-            {siteSettings?.hero_subtitle || '精选优质域名，为您的数字未来打造完美起点'}
+            {t('hero_subtitle')}
           </p>
           <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
             <div className="relative flex gap-3">
@@ -51,7 +52,7 @@ const HeroSection = ({ siteSettings, searchQuery, setSearchQuery }: HeroSectionP
                 <Input
                   type="text"
                   className="w-full pl-11 pr-4 py-6 text-lg bg-white/10 border-gray-700 text-white placeholder-gray-400 backdrop-blur-lg"
-                  placeholder="输入你想获取的域名..."
+                  placeholder={t('search_placeholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -61,7 +62,7 @@ const HeroSection = ({ siteSettings, searchQuery, setSearchQuery }: HeroSectionP
                 size="lg" 
                 className="px-8 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg"
               >
-                搜索
+                {t('search')}
               </Button>
             </div>
           </form>
