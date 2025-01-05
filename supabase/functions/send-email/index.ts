@@ -21,8 +21,17 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const emailRequest: EmailRequest = await req.json();
-    console.log("Sending email with Resend to:", emailRequest.to);
+    console.log("Starting email send process...");
+    console.log("Email request details:", {
+      to: emailRequest.to,
+      subject: emailRequest.subject
+    });
     
+    if (!RESEND_API_KEY) {
+      console.error("RESEND_API_KEY is not set");
+      throw new Error("RESEND_API_KEY is not configured");
+    }
+
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -37,17 +46,19 @@ const handler = async (req: Request): Promise<Response> => {
       }),
     });
 
+    const responseText = await res.text();
+    console.log("Resend API Response:", responseText);
+
     if (res.ok) {
-      const data = await res.json();
+      const data = JSON.parse(responseText);
       console.log("Email sent successfully:", data);
       return new Response(JSON.stringify(data), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     } else {
-      const error = await res.text();
-      console.error("Error from Resend API:", error);
-      return new Response(JSON.stringify({ error }), {
+      console.error("Error from Resend API:", responseText);
+      return new Response(JSON.stringify({ error: responseText }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

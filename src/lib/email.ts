@@ -16,6 +16,7 @@ export const sendEmail = async ({
 }) => {
   try {
     console.log('Attempting to send email to:', to);
+    console.log('Email subject:', subject);
     
     const response = await supabase.functions.invoke('send-email', {
       body: {
