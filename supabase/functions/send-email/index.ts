@@ -21,7 +21,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const emailRequest: EmailRequest = await req.json();
-    console.log("Sending email to:", emailRequest.to);
+    console.log("Sending email with Resend to:", emailRequest.to);
     
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
