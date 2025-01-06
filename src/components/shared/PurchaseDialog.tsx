@@ -7,13 +7,8 @@ import { PurchaseHeader } from './purchase/PurchaseHeader';
 import { PriceDisplay } from './purchase/PriceDisplay';
 import { PaymentSection } from './purchase/PaymentSection';
 import { OfferForm } from './purchase/OfferForm';
-
-interface Domain {
-  id: string;
-  name: string;
-  price: number;
-  owner_id?: string;
-}
+import { supabase } from '@/lib/supabase';
+import { Domain } from '@/types/domain';
 
 interface PurchaseDialogProps {
   domain: Domain | null;
@@ -35,6 +30,33 @@ const PurchaseDialog = ({
 
   const handleBack = () => {
     setMode('info');
+  };
+
+  const handleOfferSubmit = async (offerData: {
+    amount: number;
+    email: string;
+    phone: string;
+    message: string;
+  }) => {
+    try {
+      // Send email notification to domain owner
+      const { error: notificationError } = await supabase.functions.invoke('send-offer-notification', {
+        body: {
+          domainName: domain.name,
+          amount: offerData.amount,
+          buyerEmail: offerData.email,
+          buyerPhone: offerData.phone,
+          message: offerData.message,
+          ownerEmail: domain.owner_id // This will be used to send the email to the owner
+        }
+      });
+
+      if (notificationError) throw notificationError;
+      
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Error submitting offer:', error);
+    }
   };
 
   const renderContent = () => {
@@ -68,6 +90,7 @@ const PurchaseDialog = ({
             </Button>
             <OfferForm
               domain={domain}
+              onSubmit={handleOfferSubmit}
               onClose={() => onOpenChange(false)}
             />
           </div>
@@ -82,7 +105,7 @@ const PurchaseDialog = ({
                 className="flex-1 bg-purple-600 hover:bg-purple-700"
                 onClick={() => setMode('payment')}
               >
-                {t('buy_now_button')}
+                {t('buy_now')}
               </Button>
               <Button 
                 variant="outline"

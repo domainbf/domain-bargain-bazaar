@@ -12,27 +12,32 @@ export const useTranslation = () => {
   const { data: translations, error } = useQuery({
     queryKey: ['translations', currentLang],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('translations')
-        .select('*')
-        .eq('language_code', currentLang);
-      
-      if (error) {
-        console.error('Translation error:', error);
-        toast({
-          title: "Error loading translations",
-          description: "Using default text",
-          variant: "destructive",
-        });
-        throw error;
+      try {
+        const { data, error } = await supabase
+          .from('translations')
+          .select('*')
+          .eq('language_code', currentLang);
+        
+        if (error) {
+          console.error('Translation error:', error);
+          toast({
+            title: "加载翻译失败",
+            description: "使用默认文本",
+            variant: "destructive",
+          });
+          throw error;
+        }
+        
+        const translationMap = data.reduce((acc: Record<string, string>, curr) => {
+          acc[curr.key] = curr.value;
+          return acc;
+        }, {});
+        
+        return translationMap;
+      } catch (error) {
+        console.error('Error in translations query:', error);
+        return {};
       }
-      
-      const translationMap = data.reduce((acc: Record<string, string>, curr) => {
-        acc[curr.key] = curr.value;
-        return acc;
-      }, {});
-      
-      return translationMap;
     },
     retry: 2
   });
@@ -52,8 +57,8 @@ export const useTranslation = () => {
     if (error) {
       console.error('Translation error:', error);
       toast({
-        title: "Error loading translations",
-        description: "Using default text",
+        title: "加载翻译失败",
+        description: "使用默认文本",
         variant: "destructive",
       });
     }

@@ -9,10 +9,11 @@ const corsHeaders = {
 
 interface OfferNotification {
   domainName: string;
-  amount: string;
+  amount: number;
   buyerEmail: string;
   buyerPhone: string;
   message: string;
+  ownerEmail: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -21,11 +22,18 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { domainName, amount, buyerEmail, buyerPhone, message }: OfferNotification = await req.json();
+    const { 
+      domainName, 
+      amount, 
+      buyerEmail, 
+      buyerPhone, 
+      message,
+      ownerEmail 
+    }: OfferNotification = await req.json();
 
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
-        <h2>新的域名报价通知</h2>
+        <h2>恭喜！您的域名收到了新的报价</h2>
         <p>您好！您的域名 ${domainName} 收到了一个新的报价。</p>
         
         <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
@@ -49,7 +57,7 @@ const handler = async (req: Request): Promise<Response> => {
       },
       body: JSON.stringify({
         from: "Domain.BF <noreply@domain.bf>",
-        to: ["seller@example.com"], // This should be replaced with the actual seller's email
+        to: [ownerEmail],
         subject: `新的域名报价 - ${domainName}`,
         html: emailHtml,
       }),
