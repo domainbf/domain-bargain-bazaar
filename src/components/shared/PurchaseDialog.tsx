@@ -9,6 +9,7 @@ import { PaymentSection } from './purchase/PaymentSection';
 import { OfferForm } from './purchase/OfferForm';
 import { supabase } from '@/lib/supabase';
 import { Domain } from '@/types/domain';
+import { useToast } from '@/hooks/use-toast';
 
 interface PurchaseDialogProps {
   domain: Domain | null;
@@ -25,19 +26,26 @@ const PurchaseDialog = ({
 }: PurchaseDialogProps) => {
   const [mode, setMode] = useState<'info' | 'payment' | 'offer'>('info');
   const { t } = useTranslation();
+  const { toast } = useToast();
 
   if (!domain) return null;
 
-  const handleBack = () => {
-    setMode('info');
-  };
-
+  // Ensure domain has an owner_id before proceeding with offer
   const handleOfferSubmit = async (offerData: {
     amount: number;
     email: string;
     phone: string;
     message: string;
   }) => {
+    if (!domain.owner_id) {
+      toast({
+        title: t('error'),
+        description: t('domain_no_owner'),
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       // Send email notification to domain owner
       const { error: notificationError } = await supabase.functions.invoke('send-offer-notification', {
@@ -53,10 +61,23 @@ const PurchaseDialog = ({
 
       if (notificationError) throw notificationError;
       
+      toast({
+        title: t('offer_submitted'),
+        description: t('offer_success_message'),
+      });
       onOpenChange(false);
     } catch (error) {
       console.error('Error submitting offer:', error);
+      toast({
+        title: t('error'),
+        description: t('offer_error_message'),
+        variant: "destructive",
+      });
     }
+  };
+
+  const handleBack = () => {
+    setMode('info');
   };
 
   const renderContent = () => {
