@@ -10,9 +10,15 @@ import { Domain } from '@/types/domain';
 interface OfferFormProps {
   domain: Domain;
   onClose: () => void;
+  onSubmit: (offerData: {
+    amount: number;
+    email: string;
+    phone: string;
+    message: string;
+  }) => Promise<void>;
 }
 
-export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
+export const OfferForm = ({ domain, onClose, onSubmit }: OfferFormProps) => {
   const { toast } = useToast();
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,33 +44,11 @@ export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
     }
 
     try {
-      const { error: offerError } = await supabase
-        .from('domain_offers')
-        .insert({
-          domain_id: domain.id,
-          seller_id: domain.owner_id,
-          amount: Number(formData.amount),
-          message: formData.message
-        });
-
-      if (offerError) throw offerError;
-
-      // Send notification email via edge function
-      const { error: emailError } = await supabase.functions.invoke('send-offer-notification', {
-        body: {
-          domainName: domain.name,
-          amount: formData.amount,
-          buyerEmail: formData.email,
-          buyerPhone: formData.phone,
-          message: formData.message
-        }
-      });
-
-      if (emailError) throw emailError;
-
-      toast({
-        title: t('offer_submitted'),
-        description: t('offer_success_message'),
+      await onSubmit({
+        amount: Number(formData.amount),
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message
       });
       onClose();
     } catch (error) {
@@ -82,16 +66,16 @@ export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-purple-100 mb-1">
           {t('offer_amount_label')}
         </label>
         <div className="relative">
-          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
+          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-300 h-5 w-5" />
           <Input
             type="number"
             value={formData.amount}
             onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-            className="pl-10"
+            className="pl-10 bg-purple-900/20 border-purple-300/20 text-purple-100 placeholder:text-purple-400"
             placeholder={t('offer_amount_placeholder')}
             required
           />
@@ -99,16 +83,16 @@ export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
       </div>
       
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-purple-100 mb-1">
           {t('contact_email_label')}
         </label>
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-300 h-5 w-5" />
           <Input
             type="email"
             value={formData.email}
             onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-            className="pl-10"
+            className="pl-10 bg-purple-900/20 border-purple-300/20 text-purple-100 placeholder:text-purple-400"
             placeholder={t('email_placeholder')}
             required
           />
@@ -116,16 +100,16 @@ export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
       </div>
       
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-purple-100 mb-1">
           {t('contact_phone_label')}
         </label>
         <div className="relative">
-          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
+          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-300 h-5 w-5" />
           <Input
             type="tel"
             value={formData.phone}
             onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-            className="pl-10"
+            className="pl-10 bg-purple-900/20 border-purple-300/20 text-purple-100 placeholder:text-purple-400"
             placeholder={t('phone_placeholder')}
             required
           />
@@ -133,13 +117,13 @@ export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-purple-100 mb-1">
           {t('message_label')}
         </label>
         <textarea
           value={formData.message}
           onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+          className="w-full px-4 py-2 bg-purple-900/20 border border-purple-300/20 rounded-md focus:ring-purple-500 focus:border-purple-500 text-purple-100 placeholder:text-purple-400"
           rows={4}
           placeholder={t('message_placeholder')}
         />
@@ -147,7 +131,7 @@ export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
 
       <Button 
         type="submit" 
-        className="w-full bg-purple-600 hover:bg-purple-700"
+        className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white"
         disabled={isSubmitting}
       >
         {isSubmitting ? t('submitting_offer') : t('submit_offer')}

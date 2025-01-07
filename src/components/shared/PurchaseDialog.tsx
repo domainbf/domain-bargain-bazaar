@@ -46,6 +46,17 @@ const PurchaseDialog = ({
     }
 
     try {
+      const { error: offerError } = await supabase
+        .from('domain_offers')
+        .insert({
+          domain_id: domain.id,
+          seller_id: domain.owner_id,
+          amount: offerData.amount,
+          message: offerData.message
+        });
+
+      if (offerError) throw offerError;
+
       const { error: notificationError } = await supabase.functions.invoke('send-offer-notification', {
         body: {
           domainName: domain.name,
@@ -66,11 +77,7 @@ const PurchaseDialog = ({
       onOpenChange(false);
     } catch (error) {
       console.error('Error submitting offer:', error);
-      toast({
-        title: t('error'),
-        description: t('offer_error_message'),
-        variant: "destructive",
-      });
+      throw error; // Re-throw the error to be handled by the OfferForm component
     }
   };
 
