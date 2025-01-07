@@ -57,19 +57,6 @@ const PurchaseDialog = ({
 
       if (offerError) throw offerError;
 
-      const { error: notificationError } = await supabase.functions.invoke('send-offer-notification', {
-        body: {
-          domainName: domain.name,
-          amount: offerData.amount,
-          buyerEmail: offerData.email,
-          buyerPhone: offerData.phone,
-          message: offerData.message,
-          ownerEmail: domain.owner_id
-        }
-      });
-
-      if (notificationError) throw notificationError;
-      
       toast({
         title: t('offer_submitted'),
         description: t('offer_success_message'),
@@ -77,7 +64,11 @@ const PurchaseDialog = ({
       onOpenChange(false);
     } catch (error) {
       console.error('Error submitting offer:', error);
-      throw error; // Re-throw the error to be handled by the OfferForm component
+      toast({
+        title: t('offer_error'),
+        description: t('offer_error_message'),
+        variant: "destructive",
+      });
     }
   };
 
@@ -93,7 +84,7 @@ const PurchaseDialog = ({
             <Button 
               variant="ghost" 
               onClick={handleBack}
-              className="mb-4 text-purple-200 hover:text-purple-100 hover:bg-purple-500/20"
+              className="mb-4 text-white hover:text-white/90 hover:bg-white/10"
             >
               ← {t('back')}
             </Button>
@@ -110,7 +101,7 @@ const PurchaseDialog = ({
             <Button 
               variant="ghost" 
               onClick={handleBack}
-              className="mb-4 text-purple-200 hover:text-purple-100 hover:bg-purple-500/20"
+              className="mb-4 text-white hover:text-white/90 hover:bg-white/10"
             >
               ← {t('back')}
             </Button>
@@ -128,27 +119,27 @@ const PurchaseDialog = ({
             
             <div className="flex gap-4">
               <Button 
-                className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                 onClick={() => setMode('payment')}
               >
                 {t('buy_now')}
               </Button>
               <Button 
                 variant="outline"
-                className="flex-1 border-purple-300 text-purple-100 hover:bg-purple-500/20 hover:border-purple-200 transition-all duration-300"
+                className="flex-1 border-white/20 text-white hover:bg-white/10 hover:border-white/30 transition-all duration-300"
                 onClick={() => setMode('offer')}
               >
                 {t('make_offer')}
               </Button>
             </div>
 
-            <div className="flex items-start gap-4 p-6 bg-purple-900/30 rounded-xl border border-purple-300/20 backdrop-blur-sm">
-              <ShieldCheck className="h-6 w-6 text-purple-300 mt-1" />
+            <div className="flex items-start gap-4 p-6 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
+              <ShieldCheck className="h-6 w-6 text-blue-300 mt-1" />
               <div className="space-y-1">
-                <p className="font-semibold text-purple-100">
+                <p className="font-semibold text-white">
                   {t('secure_transaction')}
                 </p>
-                <p className="text-purple-200 text-sm">
+                <p className="text-white/80 text-sm">
                   {t('purchase_security_message')}
                 </p>
               </div>
@@ -160,7 +151,7 @@ const PurchaseDialog = ({
 
   return (
     <Dialog open={!!domain} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-purple-900/90 to-indigo-900/90 backdrop-blur-lg border border-purple-300/20 p-0 overflow-hidden shadow-2xl">
+      <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-gray-900/95 to-black/95 backdrop-blur-lg border border-white/20 p-0 overflow-hidden shadow-2xl">
         <PurchaseHeader domainName={domain.name} />
         {renderContent()}
       </DialogContent>
