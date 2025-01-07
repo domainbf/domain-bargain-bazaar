@@ -9,6 +9,8 @@ import DomainScroller from './DomainScroller';
 import { LoadingState } from '@/components/ui/loading-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { supabase } from '@/lib/supabase';
+import { Globe, DollarSign, ShieldCheck } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 
 interface ScrollingDomainsProps {
   direction?: 'left' | 'right';
@@ -105,22 +107,68 @@ const ScrollingDomains = ({
       </div>
 
       <Dialog open={!!selectedDomain} onOpenChange={() => setSelectedDomain(null)}>
-        <DialogContent className="bg-black/90 backdrop-blur-lg border border-white/20">
-          <DialogHeader>
-            <DialogTitle className="text-white">
-              {t('purchase.dialog.title')}: {selectedDomain?.name}
-            </DialogTitle>
+        <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-gray-900 to-black border border-white/10">
+          <DialogHeader className="p-6 border-b border-white/10">
+            <div className="flex items-center gap-3 mb-2">
+              <Globe className="h-6 w-6 text-blue-400" />
+              <DialogTitle className="text-2xl font-bold text-white">
+                {selectedDomain?.name}
+              </DialogTitle>
+            </div>
           </DialogHeader>
-          <div className="py-4">
-            <p className="text-lg font-semibold text-white mb-4">
-              {t('purchase.dialog.price')}: ${selectedDomain?.price}
-            </p>
-            {selectedDomain && (
-              <PayPalButton
-                amount={selectedDomain.price}
-                onSuccess={handlePurchaseSuccess}
-              />
-            )}
+
+          <div className="p-6 space-y-6">
+            {/* Price Display */}
+            <div className="bg-white/5 rounded-lg p-6 backdrop-blur-sm border border-white/10">
+              <div className="mb-2 text-sm font-medium text-white/70">{t('domain.price')}</div>
+              <div className="flex items-baseline gap-2">
+                <DollarSign className="h-6 w-6 text-blue-400" />
+                <span className="text-3xl font-bold text-white">
+                  {selectedDomain?.price.toLocaleString()}
+                </span>
+                <span className="text-white/70">USD</span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="grid gap-4">
+              <Button 
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-6"
+                onClick={() => {}}
+              >
+                {t('domain.purchase.buyNow')}
+              </Button>
+              <Button 
+                variant="outline"
+                className="w-full border-white/10 text-white hover:bg-white/5"
+                onClick={() => {}}
+              >
+                {t('domain.purchase.makeOffer')}
+              </Button>
+            </div>
+
+            {/* PayPal Button */}
+            <div className="bg-white/5 p-4 rounded-lg backdrop-blur-sm border border-white/10">
+              {selectedDomain && (
+                <PayPalButton
+                  amount={selectedDomain.price}
+                  onSuccess={handlePurchaseSuccess}
+                />
+              )}
+            </div>
+
+            {/* Security Message */}
+            <div className="flex items-start gap-3 p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10">
+              <ShieldCheck className="h-5 w-5 text-blue-400 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-medium text-white">
+                  {t('domain.purchase.secureTransaction')}
+                </p>
+                <p className="text-sm text-white/70">
+                  {t('domain.purchase.protection')}
+                </p>
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
