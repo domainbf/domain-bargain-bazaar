@@ -47,7 +47,6 @@ const Index = () => {
       <Navigation />
       
       <HeroSection 
-        siteSettings={siteSettings || {}}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
       />
