@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { sendFeedbackEmail } from '@/lib/email';
+import { supabase } from '@/lib/supabase';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ContactFormData {
   name: string;
@@ -15,19 +16,26 @@ interface ContactFormData {
 const ContactForm = () => {
   const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<ContactFormData>();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const onSubmit = async (data: ContactFormData) => {
     try {
-      await sendFeedbackEmail(data);
+      const { error } = await supabase.functions.invoke('send-feedback', {
+        body: data
+      });
+
+      if (error) throw error;
+
       toast({
-        title: "提交成功",
-        description: "我们已收到您的反馈，将尽快与您联系。",
+        title: t('contact.success.title'),
+        description: t('contact.success.description'),
       });
       reset();
     } catch (error) {
+      console.error('Error sending feedback:', error);
       toast({
-        title: "提交失败",
-        description: "请稍后重试。",
+        title: t('contact.error.title'),
+        description: t('contact.error.description'),
         variant: "destructive",
       });
     }
@@ -38,7 +46,7 @@ const ContactForm = () => {
       <div>
         <Input
           {...register('name', { required: true })}
-          placeholder="您的姓名"
+          placeholder={t('contact.form.name')}
           className="w-full"
         />
       </div>
@@ -46,14 +54,14 @@ const ContactForm = () => {
         <Input
           {...register('email', { required: true, pattern: /^\S+@\S+$/i })}
           type="email"
-          placeholder="您的邮箱"
+          placeholder={t('contact.form.email')}
           className="w-full"
         />
       </div>
       <div>
         <Textarea
           {...register('message', { required: true })}
-          placeholder="请输入您的留言"
+          placeholder={t('contact.form.message')}
           className="w-full min-h-[150px]"
         />
       </div>
@@ -62,7 +70,7 @@ const ContactForm = () => {
         className="w-full"
         disabled={isSubmitting}
       >
-        {isSubmitting ? '提交中...' : '提交反馈'}
+        {isSubmitting ? t('contact.form.submitting') : t('contact.form.submit')}
       </Button>
     </form>
   );

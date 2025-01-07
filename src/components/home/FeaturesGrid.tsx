@@ -1,8 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Globe2, Rocket } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const FeaturesGrid = () => {
+  const { t } = useTranslation();
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
       <motion.div 
@@ -11,9 +14,9 @@ const FeaturesGrid = () => {
       >
         <div className="flex items-center gap-3 mb-3">
           <Sparkles className="h-6 w-6 text-purple-400" />
-          <h3 className="text-lg font-semibold text-white">精品域名</h3>
+          <h3 className="text-lg font-semibold text-white">{t('features.premium.title')}</h3>
         </div>
-        <p className="text-gray-300">发现市场上最受欢迎的优质域名资源</p>
+        <p className="text-gray-300">{t('features.premium.description')}</p>
       </motion.div>
       
       <motion.div 
@@ -22,9 +25,9 @@ const FeaturesGrid = () => {
       >
         <div className="flex items-center gap-3 mb-3">
           <Globe2 className="h-6 w-6 text-blue-400" />
-          <h3 className="text-lg font-semibold text-white">全球域名</h3>
+          <h3 className="text-lg font-semibold text-white">{t('features.global.title')}</h3>
         </div>
-        <p className="text-gray-300">覆盖全球的域名交易网络</p>
+        <p className="text-gray-300">{t('features.global.description')}</p>
       </motion.div>
       
       <motion.div 
@@ -33,9 +36,9 @@ const FeaturesGrid = () => {
       >
         <div className="flex items-center gap-3 mb-3">
           <Rocket className="h-6 w-6 text-pink-400" />
-          <h3 className="text-lg font-semibold text-white">快速转移</h3>
+          <h3 className="text-lg font-semibold text-white">{t('features.transfer.title')}</h3>
         </div>
-        <p className="text-gray-300">收到付款后，立即安排转移程序</p>
+        <p className="text-gray-300">{t('features.transfer.description')}</p>
       </motion.div>
     </div>
   );

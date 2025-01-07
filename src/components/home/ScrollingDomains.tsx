@@ -118,7 +118,6 @@ const ScrollingDomains = ({
           </DialogHeader>
 
           <div className="p-6 space-y-6">
-            {/* Price Display */}
             <div className="bg-white/5 rounded-lg p-6 backdrop-blur-sm border border-white/10">
               <div className="mb-2 text-sm font-medium text-white/70">{t('domain.price')}</div>
               <div className="flex items-baseline gap-2">
@@ -130,7 +129,6 @@ const ScrollingDomains = ({
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="grid gap-4">
               <Button 
                 className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-6"
@@ -147,7 +145,6 @@ const ScrollingDomains = ({
               </Button>
             </div>
 
-            {/* PayPal Button */}
             <div className="bg-white/5 p-4 rounded-lg backdrop-blur-sm border border-white/10">
               {selectedDomain && (
                 <PayPalButton
@@ -157,7 +154,6 @@ const ScrollingDomains = ({
               )}
             </div>
 
-            {/* Security Message */}
             <div className="flex items-start gap-3 p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10">
               <ShieldCheck className="h-5 w-5 text-blue-400 mt-0.5" />
               <div className="space-y-1">
