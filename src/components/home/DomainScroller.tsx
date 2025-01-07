@@ -25,7 +25,7 @@ const DomainScroller = ({
         x: direction === 'left' ? ['0%', '-50%'] : ['-50%', '0%'],
       }}
       transition={{
-        duration: 40,
+        duration: 60, // Increased from 40 to 60 for slower scrolling
         repeat: Infinity,
         ease: 'linear',
       }}

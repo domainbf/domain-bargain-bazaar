@@ -30,7 +30,6 @@ const PurchaseDialog = ({
 
   if (!domain) return null;
 
-  // Ensure domain has an owner_id before proceeding with offer
   const handleOfferSubmit = async (offerData: {
     amount: number;
     email: string;
@@ -47,7 +46,6 @@ const PurchaseDialog = ({
     }
 
     try {
-      // Send email notification to domain owner
       const { error: notificationError } = await supabase.functions.invoke('send-offer-notification', {
         body: {
           domainName: domain.name,
@@ -55,7 +53,7 @@ const PurchaseDialog = ({
           buyerEmail: offerData.email,
           buyerPhone: offerData.phone,
           message: offerData.message,
-          ownerEmail: domain.owner_id // This will be used to send the email to the owner
+          ownerEmail: domain.owner_id
         }
       });
 
@@ -88,7 +86,7 @@ const PurchaseDialog = ({
             <Button 
               variant="ghost" 
               onClick={handleBack}
-              className="mb-4"
+              className="mb-4 text-purple-200 hover:text-purple-100 hover:bg-purple-500/20"
             >
               ← {t('back')}
             </Button>
@@ -105,7 +103,7 @@ const PurchaseDialog = ({
             <Button 
               variant="ghost" 
               onClick={handleBack}
-              className="mb-4"
+              className="mb-4 text-purple-200 hover:text-purple-100 hover:bg-purple-500/20"
             >
               ← {t('back')}
             </Button>
@@ -123,27 +121,27 @@ const PurchaseDialog = ({
             
             <div className="flex gap-4">
               <Button 
-                className="flex-1 bg-purple-600 hover:bg-purple-700"
+                className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                 onClick={() => setMode('payment')}
               >
                 {t('buy_now')}
               </Button>
               <Button 
                 variant="outline"
-                className="flex-1 border-purple-200 text-purple-700 hover:bg-purple-50"
+                className="flex-1 border-purple-300 text-purple-100 hover:bg-purple-500/20 hover:border-purple-200 transition-all duration-300"
                 onClick={() => setMode('offer')}
               >
                 {t('make_offer')}
               </Button>
             </div>
 
-            <div className="flex items-start gap-4 p-6 bg-green-50 rounded-xl border border-green-100">
-              <ShieldCheck className="h-6 w-6 text-green-600 mt-1" />
+            <div className="flex items-start gap-4 p-6 bg-purple-900/30 rounded-xl border border-purple-300/20 backdrop-blur-sm">
+              <ShieldCheck className="h-6 w-6 text-purple-300 mt-1" />
               <div className="space-y-1">
-                <p className="font-semibold text-green-800">
+                <p className="font-semibold text-purple-100">
                   {t('secure_transaction')}
                 </p>
-                <p className="text-green-700 text-sm">
+                <p className="text-purple-200 text-sm">
                   {t('purchase_security_message')}
                 </p>
               </div>
@@ -155,7 +153,7 @@ const PurchaseDialog = ({
 
   return (
     <Dialog open={!!domain} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-black/90 to-gray-900/90 backdrop-blur-lg border border-white/20 p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-purple-900/90 to-indigo-900/90 backdrop-blur-lg border border-purple-300/20 p-0 overflow-hidden shadow-2xl">
         <PurchaseHeader domainName={domain.name} />
         {renderContent()}
       </DialogContent>

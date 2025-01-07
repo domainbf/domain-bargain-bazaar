@@ -9,15 +9,15 @@ export const PriceDisplay = ({ price }: PriceDisplayProps) => {
   const { t } = useTranslation();
   
   return (
-    <div className="flex items-center justify-between p-6 bg-gradient-to-br from-purple-50 to-white rounded-xl border border-purple-100 shadow-sm">
+    <div className="flex items-center justify-between p-6 bg-gradient-to-br from-purple-500/10 to-purple-600/10 rounded-xl border border-purple-300/20 shadow-lg backdrop-blur-sm">
       <div className="space-y-1">
-        <p className="text-gray-600 font-medium">{t('purchase_price_label')}</p>
+        <p className="text-purple-200 font-medium">{t('purchase_price_label')}</p>
         <div className="flex items-baseline">
-          <DollarSign className="h-8 w-8 text-purple-600 mr-1" />
-          <span className="text-4xl font-bold text-gray-900">
+          <DollarSign className="h-8 w-8 text-purple-300 mr-1" />
+          <span className="text-4xl font-bold text-white">
             {price.toLocaleString()}
           </span>
-          <span className="ml-2 text-gray-500 text-lg">USD</span>
+          <span className="ml-2 text-purple-200 text-lg">USD</span>
         </div>
       </div>
     </div>
