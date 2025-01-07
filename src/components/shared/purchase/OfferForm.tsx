@@ -5,13 +5,10 @@ import { useToast } from "@/hooks/use-toast";
 import { DollarSign, Mail, Phone } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Domain } from '@/types/domain';
 
 interface OfferFormProps {
-  domain: {
-    id: string;
-    name: string;
-    owner_id: string;
-  };
+  domain: Domain;
   onClose: () => void;
 }
 
@@ -29,6 +26,16 @@ export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    if (!domain.owner_id) {
+      toast({
+        title: t('error'),
+        description: t('domain_no_owner'),
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const { error: offerError } = await supabase
