@@ -38,14 +38,15 @@ const PurchaseDialog = ({
   }) => {
     if (!domain.owner_id) {
       toast({
-        title: t('error'),
-        description: t('domain_no_owner'),
+        title: t('domain.purchase.error'),
+        description: t('domain.purchase.domain_no_owner'),
         variant: "destructive",
       });
       return;
     }
 
     try {
+      // 保存报价到数据库
       const { error: offerError } = await supabase
         .from('domain_offers')
         .insert({
@@ -57,16 +58,30 @@ const PurchaseDialog = ({
 
       if (offerError) throw offerError;
 
+      // 发送通知邮件
+      const { error: notificationError } = await supabase.functions.invoke('send-offer-notification', {
+        body: {
+          domainName: domain.name,
+          amount: offerData.amount,
+          buyerEmail: offerData.email,
+          buyerPhone: offerData.phone,
+          message: offerData.message,
+          ownerEmail: 'owner@domain.bf' // 这里应该是实际的域名所有者邮箱
+        }
+      });
+
+      if (notificationError) throw notificationError;
+
       toast({
-        title: t('offer_submitted'),
-        description: t('offer_success_message'),
+        title: t('domain.purchase.offer_submitted'),
+        description: t('domain.purchase.offer_success_message'),
       });
       onOpenChange(false);
     } catch (error) {
       console.error('Error submitting offer:', error);
       toast({
-        title: t('offer_error'),
-        description: t('offer_error_message'),
+        title: t('domain.purchase.offer_error'),
+        description: t('domain.purchase.offer_error_message'),
         variant: "destructive",
       });
     }
@@ -86,7 +101,7 @@ const PurchaseDialog = ({
               onClick={handleBack}
               className="mb-4 text-white hover:text-white/90 hover:bg-white/10"
             >
-              ← {t('back')}
+              ← {t('domain.purchase.back')}
             </Button>
             <PaymentSection
               amount={domain.price}
@@ -103,7 +118,7 @@ const PurchaseDialog = ({
               onClick={handleBack}
               className="mb-4 text-white hover:text-white/90 hover:bg-white/10"
             >
-              ← {t('back')}
+              ← {t('domain.purchase.back')}
             </Button>
             <OfferForm
               domain={domain}
@@ -122,14 +137,14 @@ const PurchaseDialog = ({
                 className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                 onClick={() => setMode('payment')}
               >
-                {t('domain.purchase.buyNow')}
+                {t('domain.purchase.buy_now')}
               </Button>
               <Button 
                 variant="outline"
                 className="flex-1 border-white/20 text-white hover:bg-white/10 hover:border-white/30 transition-all duration-300"
                 onClick={() => setMode('offer')}
               >
-                {t('domain.purchase.makeOffer')}
+                {t('domain.purchase.make_offer')}
               </Button>
             </div>
 
@@ -137,7 +152,7 @@ const PurchaseDialog = ({
               <ShieldCheck className="h-6 w-6 text-blue-300 mt-1" />
               <div className="space-y-1">
                 <p className="font-semibold text-white">
-                  {t('domain.purchase.secureTransaction')}
+                  {t('domain.purchase.secure_transaction')}
                 </p>
                 <p className="text-white/80 text-sm">
                   {t('domain.purchase.protection')}

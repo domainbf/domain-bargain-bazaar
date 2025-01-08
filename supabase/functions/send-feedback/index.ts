@@ -11,6 +11,7 @@ interface FeedbackRequest {
   name: string;
   email: string;
   message: string;
+  to: string[];
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -46,7 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
       },
       body: JSON.stringify({
         from: "Domain.BF <noreply@domain.bf>",
-        to: ["admin@domain.bf"],
+        to: feedbackRequest.to,
         subject: `新的反馈信息 - 来自 ${feedbackRequest.name}`,
         html: emailHtml,
       }),

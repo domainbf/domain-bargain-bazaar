@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { DollarSign, Mail, Phone } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Domain } from '@/types/domain';
 
@@ -33,16 +32,6 @@ export const OfferForm = ({ domain, onClose, onSubmit }: OfferFormProps) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    if (!domain.owner_id) {
-      toast({
-        title: t('error'),
-        description: t('domain_no_owner'),
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
     try {
       await onSubmit({
         amount: Number(formData.amount),
@@ -54,8 +43,8 @@ export const OfferForm = ({ domain, onClose, onSubmit }: OfferFormProps) => {
     } catch (error) {
       console.error('Error submitting offer:', error);
       toast({
-        title: t('offer_error'),
-        description: t('offer_error_message'),
+        title: t('domain.purchase.offer_error'),
+        description: t('domain.purchase.offer_error_message'),
         variant: "destructive",
       });
     } finally {
@@ -66,75 +55,75 @@ export const OfferForm = ({ domain, onClose, onSubmit }: OfferFormProps) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-purple-100 mb-1">
-          {t('offer_amount_label')}
+        <label className="block text-sm font-medium text-white mb-1">
+          {t('domain.purchase.offer_amount')}
         </label>
         <div className="relative">
-          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-300 h-5 w-5" />
+          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70 h-5 w-5" />
           <Input
             type="number"
             value={formData.amount}
             onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-            className="pl-10 bg-purple-900/20 border-purple-300/20 text-purple-100 placeholder:text-purple-400"
-            placeholder={t('offer_amount_placeholder')}
+            className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50"
+            placeholder={t('domain.purchase.offer_amount_placeholder')}
             required
           />
         </div>
       </div>
       
       <div>
-        <label className="block text-sm font-medium text-purple-100 mb-1">
-          {t('contact_email_label')}
+        <label className="block text-sm font-medium text-white mb-1">
+          {t('domain.purchase.contact_email')}
         </label>
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-300 h-5 w-5" />
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70 h-5 w-5" />
           <Input
             type="email"
             value={formData.email}
             onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-            className="pl-10 bg-purple-900/20 border-purple-300/20 text-purple-100 placeholder:text-purple-400"
-            placeholder={t('email_placeholder')}
+            className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50"
+            placeholder={t('domain.purchase.email_placeholder')}
             required
           />
         </div>
       </div>
       
       <div>
-        <label className="block text-sm font-medium text-purple-100 mb-1">
-          {t('contact_phone_label')}
+        <label className="block text-sm font-medium text-white mb-1">
+          {t('domain.purchase.contact_phone')}
         </label>
         <div className="relative">
-          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-300 h-5 w-5" />
+          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70 h-5 w-5" />
           <Input
             type="tel"
             value={formData.phone}
             onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-            className="pl-10 bg-purple-900/20 border-purple-300/20 text-purple-100 placeholder:text-purple-400"
-            placeholder={t('phone_placeholder')}
+            className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50"
+            placeholder={t('domain.purchase.phone_placeholder')}
             required
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-purple-100 mb-1">
-          {t('message_label')}
+        <label className="block text-sm font-medium text-white mb-1">
+          {t('domain.purchase.message')}
         </label>
         <textarea
           value={formData.message}
           onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
-          className="w-full px-4 py-2 bg-purple-900/20 border border-purple-300/20 rounded-md focus:ring-purple-500 focus:border-purple-500 text-purple-100 placeholder:text-purple-400"
+          className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-white/50"
           rows={4}
-          placeholder={t('message_placeholder')}
+          placeholder={t('domain.purchase.message_placeholder')}
         />
       </div>
 
       <Button 
         type="submit" 
-        className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white"
+        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white"
         disabled={isSubmitting}
       >
-        {isSubmitting ? t('submitting_offer') : t('submit_offer')}
+        {isSubmitting ? t('domain.purchase.submitting_offer') : t('domain.purchase.submit_offer')}
       </Button>
     </form>
   );

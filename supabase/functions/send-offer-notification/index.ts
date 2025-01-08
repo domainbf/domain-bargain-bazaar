@@ -31,6 +31,10 @@ const handler = async (req: Request): Promise<Response> => {
       ownerEmail 
     }: OfferNotification = await req.json();
 
+    if (!RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY is not configured");
+    }
+
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
         <h2>恭喜！您的域名收到了新的报价</h2>

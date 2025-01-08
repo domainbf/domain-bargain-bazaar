@@ -21,7 +21,12 @@ const ContactForm = () => {
   const onSubmit = async (data: ContactFormData) => {
     try {
       const { error } = await supabase.functions.invoke('send-feedback', {
-        body: data
+        body: {
+          name: data.name,
+          email: data.email,
+          message: data.message,
+          to: ['admin@domain.bf']
+        }
       });
 
       if (error) throw error;
@@ -47,7 +52,7 @@ const ContactForm = () => {
         <Input
           {...register('name', { required: true })}
           placeholder={t('contact.form.name')}
-          className="w-full"
+          className="w-full bg-white/10 border-white/20 text-white placeholder:text-white/50"
         />
       </div>
       <div>
@@ -55,19 +60,19 @@ const ContactForm = () => {
           {...register('email', { required: true, pattern: /^\S+@\S+$/i })}
           type="email"
           placeholder={t('contact.form.email')}
-          className="w-full"
+          className="w-full bg-white/10 border-white/20 text-white placeholder:text-white/50"
         />
       </div>
       <div>
         <Textarea
           {...register('message', { required: true })}
           placeholder={t('contact.form.message')}
-          className="w-full min-h-[150px]"
+          className="w-full min-h-[150px] bg-white/10 border-white/20 text-white placeholder:text-white/50"
         />
       </div>
       <Button
         type="submit"
-        className="w-full"
+        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white"
         disabled={isSubmitting}
       >
         {isSubmitting ? t('contact.form.submitting') : t('contact.form.submit')}
