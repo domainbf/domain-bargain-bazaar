@@ -122,14 +122,14 @@ const PurchaseDialog = ({
                 className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                 onClick={() => setMode('payment')}
               >
-                {t('buy_now')}
+                {t('domain.purchase.buyNow')}
               </Button>
               <Button 
                 variant="outline"
                 className="flex-1 border-white/20 text-white hover:bg-white/10 hover:border-white/30 transition-all duration-300"
                 onClick={() => setMode('offer')}
               >
-                {t('make_offer')}
+                {t('domain.purchase.makeOffer')}
               </Button>
             </div>
 
@@ -137,10 +137,10 @@ const PurchaseDialog = ({
               <ShieldCheck className="h-6 w-6 text-blue-300 mt-1" />
               <div className="space-y-1">
                 <p className="font-semibold text-white">
-                  {t('secure_transaction')}
+                  {t('domain.purchase.secureTransaction')}
                 </p>
                 <p className="text-white/80 text-sm">
-                  {t('purchase_security_message')}
+                  {t('domain.purchase.protection')}
                 </p>
               </div>
             </div>
