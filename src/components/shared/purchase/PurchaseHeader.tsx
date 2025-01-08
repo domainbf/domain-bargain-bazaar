@@ -16,7 +16,7 @@ export const PurchaseHeader = ({ domainName }: PurchaseHeaderProps) => {
         <div className="flex items-center gap-3 mb-4">
           <Globe className="h-8 w-8 text-blue-200" />
           <span className="text-sm font-medium text-blue-200">
-            {t('purchase_dialog_title')}
+            {t('domain.purchase.description')}
           </span>
         </div>
         <DialogTitle className="text-4xl font-bold tracking-tight mb-2">
