@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from '@/components/ui/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useScrollingDomains } from '@/hooks/useScrollingDomains';
@@ -115,17 +115,20 @@ const ScrollingDomains = ({
                 {selectedDomain?.name}
               </DialogTitle>
             </div>
+            <DialogDescription className="text-gray-400">
+              {t('domain.purchase.description')}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="p-6 space-y-6">
-            <div className="bg-white/5 rounded-lg p-6 backdrop-blur-sm border border-white/10">
-              <div className="mb-2 text-sm font-medium text-white/70">{t('domain.price')}</div>
+            <div className="bg-gray-800/50 rounded-lg p-6 backdrop-blur-sm border border-white/10">
+              <div className="mb-2 text-sm font-medium text-gray-300">{t('domain.price')}</div>
               <div className="flex items-baseline gap-2">
                 <DollarSign className="h-6 w-6 text-blue-400" />
                 <span className="text-3xl font-bold text-white">
                   {selectedDomain?.price.toLocaleString()}
                 </span>
-                <span className="text-white/70">USD</span>
+                <span className="text-gray-300">USD</span>
               </div>
             </div>
 
@@ -138,14 +141,14 @@ const ScrollingDomains = ({
               </Button>
               <Button 
                 variant="outline"
-                className="w-full border-white/10 text-white hover:bg-white/5"
+                className="w-full border-white/20 text-gray-300 hover:text-white hover:bg-white/10 hover:border-white/30"
                 onClick={() => {}}
               >
                 {t('domain.purchase.makeOffer')}
               </Button>
             </div>
 
-            <div className="bg-white/5 p-4 rounded-lg backdrop-blur-sm border border-white/10">
+            <div className="bg-gray-800/50 p-4 rounded-lg backdrop-blur-sm border border-white/10">
               {selectedDomain && (
                 <PayPalButton
                   amount={selectedDomain.price}
@@ -154,13 +157,13 @@ const ScrollingDomains = ({
               )}
             </div>
 
-            <div className="flex items-start gap-3 p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10">
+            <div className="flex items-start gap-3 p-4 bg-gray-800/50 rounded-lg backdrop-blur-sm border border-white/10">
               <ShieldCheck className="h-5 w-5 text-blue-400 mt-0.5" />
               <div className="space-y-1">
                 <p className="font-medium text-white">
                   {t('domain.purchase.secureTransaction')}
                 </p>
-                <p className="text-sm text-white/70">
+                <p className="text-sm text-gray-300">
                   {t('domain.purchase.protection')}
                 </p>
               </div>

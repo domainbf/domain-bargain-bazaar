@@ -9,7 +9,7 @@ export const useTranslation = () => {
     localStorage.getItem('selectedLanguage') || 'zh'
   );
 
-  const { data: translations, error } = useQuery({
+  const { data: translations, error, refetch } = useQuery({
     queryKey: ['translations', currentLang],
     queryFn: async () => {
       try {
@@ -50,6 +50,7 @@ export const useTranslation = () => {
   const changeLanguage = (lang: string) => {
     setCurrentLang(lang);
     localStorage.setItem('selectedLanguage', lang);
+    refetch();
     window.dispatchEvent(new Event('languageChanged'));
   };
 
