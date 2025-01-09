@@ -8,4 +8,8 @@ export interface Domain {
   owner_id?: string | null;
   created_at?: string;
   is_featured?: boolean;
+  minimum_offer?: number;
+  meta_title?: string;
+  meta_description?: string;
+  verification_status?: string;
 }
