@@ -35,7 +35,7 @@ const PurchaseDialog = ({
             <Button 
               variant="ghost" 
               onClick={() => setMode('info')}
-              className="mb-4 text-gray-300 hover:text-white hover:bg-white/10"
+              className="mb-4 text-white hover:text-white/90 hover:bg-white/10"
             >
               ← {t('domain.purchase.back')}
             </Button>
@@ -52,7 +52,7 @@ const PurchaseDialog = ({
             <Button 
               variant="ghost" 
               onClick={() => setMode('info')}
-              className="mb-4 text-gray-300 hover:text-white hover:bg-white/10"
+              className="mb-4 text-white hover:text-white/90 hover:bg-white/10"
             >
               ← {t('domain.purchase.back')}
             </Button>
@@ -69,27 +69,27 @@ const PurchaseDialog = ({
             
             <div className="flex gap-4">
               <Button 
-                className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={() => setMode('payment')}
               >
                 {t('domain.purchase.buy_now')}
               </Button>
               <Button 
                 variant="outline"
-                className="flex-1 border-white/20 text-gray-300 hover:text-white hover:bg-white/10 hover:border-white/30 transition-all duration-300"
+                className="flex-1 border-white/20 text-white hover:text-white hover:bg-white/10"
                 onClick={() => setMode('offer')}
               >
                 {t('domain.purchase.make_offer')}
               </Button>
             </div>
 
-            <div className="flex items-start gap-4 p-6 bg-gray-900/80 rounded-xl border border-white/10 backdrop-blur-sm">
+            <div className="flex items-start gap-4 p-6 bg-gray-800/50 rounded-xl border border-white/10">
               <ShieldCheck className="h-6 w-6 text-blue-400 mt-1" />
               <div className="space-y-1">
                 <p className="font-semibold text-white">
                   {t('domain.purchase.secure_transaction')}
                 </p>
-                <p className="text-gray-300 text-sm">
+                <p className="text-gray-300">
                   {t('domain.purchase.protection')}
                 </p>
               </div>
@@ -101,7 +101,7 @@ const PurchaseDialog = ({
 
   return (
     <Dialog open={!!domain} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-gray-900/95 to-black/95 backdrop-blur-lg border border-white/20 p-0 overflow-hidden shadow-2xl">
+      <DialogContent className="sm:max-w-[500px] bg-gray-900 border border-white/20 p-0 overflow-hidden">
         <PurchaseHeader domainName={domain.name} />
         {renderContent()}
       </DialogContent>

@@ -7,7 +7,7 @@ import { Domain } from '@/types/domain';
 
 interface OfferFormProps {
   domain: Domain;
-  onSubmit: (offerData: {
+  onSubmit?: (offerData: {
     amount: number;
     email: string;
     phone: string;
@@ -28,21 +28,23 @@ export const OfferForm = ({ domain, onSubmit, onClose }: OfferFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      await onSubmit(formData);
-      onClose();
-    } catch (error) {
-      console.error('Error submitting offer:', error);
-    } finally {
-      setIsSubmitting(false);
+    if (onSubmit) {
+      setIsSubmitting(true);
+      try {
+        await onSubmit(formData);
+        onClose();
+      } catch (error) {
+        console.error('Error submitting offer:', error);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 text-white">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="amount" className="block text-sm font-medium mb-1">
+        <label htmlFor="amount" className="block text-sm font-medium text-white mb-1">
           {t('domain.purchase.offer_amount')}
         </label>
         <Input
@@ -52,13 +54,13 @@ export const OfferForm = ({ domain, onSubmit, onClose }: OfferFormProps) => {
           onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
           min={domain.minimum_offer || 0}
           required
-          className="bg-gray-800/50 border-white/10 text-white"
+          className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400"
           placeholder={t('domain.purchase.offer_amount_placeholder')}
         />
       </div>
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium mb-1">
+        <label htmlFor="email" className="block text-sm font-medium text-white mb-1">
           {t('domain.purchase.contact_email')}
         </label>
         <Input
@@ -67,13 +69,13 @@ export const OfferForm = ({ domain, onSubmit, onClose }: OfferFormProps) => {
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
-          className="bg-gray-800/50 border-white/10 text-white"
+          className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400"
           placeholder={t('domain.purchase.email_placeholder')}
         />
       </div>
 
       <div>
-        <label htmlFor="phone" className="block text-sm font-medium mb-1">
+        <label htmlFor="phone" className="block text-sm font-medium text-white mb-1">
           {t('domain.purchase.contact_phone')}
         </label>
         <Input
@@ -82,20 +84,20 @@ export const OfferForm = ({ domain, onSubmit, onClose }: OfferFormProps) => {
           value={formData.phone}
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
           required
-          className="bg-gray-800/50 border-white/10 text-white"
+          className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400"
           placeholder={t('domain.purchase.phone_placeholder')}
         />
       </div>
 
       <div>
-        <label htmlFor="message" className="block text-sm font-medium mb-1">
+        <label htmlFor="message" className="block text-sm font-medium text-white mb-1">
           {t('domain.purchase.message')}
         </label>
         <Textarea
           id="message"
           value={formData.message}
           onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-          className="bg-gray-800/50 border-white/10 text-white min-h-[100px]"
+          className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400 min-h-[100px]"
           placeholder={t('domain.purchase.message_placeholder')}
         />
       </div>
@@ -104,7 +106,7 @@ export const OfferForm = ({ domain, onSubmit, onClose }: OfferFormProps) => {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 bg-blue-600 hover:bg-blue-700"
+          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
         >
           {isSubmitting ? t('domain.purchase.submitting_offer') : t('domain.purchase.submit_offer')}
         </Button>
@@ -112,7 +114,7 @@ export const OfferForm = ({ domain, onSubmit, onClose }: OfferFormProps) => {
           type="button"
           variant="outline"
           onClick={onClose}
-          className="flex-1 border-white/10 text-white hover:bg-white/10"
+          className="flex-1 border-white/20 text-white hover:text-white hover:bg-white/10"
         >
           {t('domain.purchase.cancel')}
         </Button>
