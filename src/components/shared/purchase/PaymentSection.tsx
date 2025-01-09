@@ -18,7 +18,7 @@ export const PaymentSection = ({ amount, onSuccess, isProcessing }: PaymentSecti
         {t('payment_method_label')}
       </h4>
       <div className="grid gap-4">
-        <div className="bg-white/5 p-4 rounded-lg border border-white/10">
+        <div className="bg-gray-800/50 p-4 rounded-lg border border-white/10">
           <PayPalButton
             amount={amount}
             onSuccess={onSuccess}

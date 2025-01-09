@@ -1,23 +1,26 @@
 import { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Mail, Phone } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Domain } from '@/types/domain';
-import { supabase } from '@/lib/supabase';
 
 interface OfferFormProps {
   domain: Domain;
+  onSubmit: (offerData: {
+    amount: number;
+    email: string;
+    phone: string;
+    message: string;
+  }) => Promise<void>;
   onClose: () => void;
 }
 
-export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
-  const { toast } = useToast();
+export const OfferForm = ({ domain, onSubmit, onClose }: OfferFormProps) => {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    amount: '',
+    amount: domain.minimum_offer || domain.price || 0,
     email: '',
     phone: '',
     message: ''
@@ -26,128 +29,94 @@ export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     try {
-      if (!domain.owner_id) {
-        throw new Error(t('domain.purchase.domain_no_owner'));
-      }
-
-      // Save offer to database
-      const { error: offerError } = await supabase
-        .from('domain_offers')
-        .insert({
-          domain_id: domain.id,
-          seller_id: domain.owner_id,
-          amount: Number(formData.amount),
-          message: formData.message
-        });
-
-      if (offerError) throw offerError;
-
-      // Send notification email
-      const { error: notificationError } = await supabase.functions.invoke('send-offer-notification', {
-        body: {
-          domainName: domain.name,
-          amount: Number(formData.amount),
-          buyerEmail: formData.email,
-          buyerPhone: formData.phone,
-          message: formData.message,
-          ownerEmail: domain.owner_id // This will be replaced with actual owner email in the edge function
-        }
-      });
-
-      if (notificationError) throw notificationError;
-
-      toast({
-        title: t('domain.purchase.offer_submitted'),
-        description: t('domain.purchase.offer_success_message'),
-      });
+      await onSubmit(formData);
       onClose();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error submitting offer:', error);
-      toast({
-        title: t('domain.purchase.offer_error'),
-        description: error.message || t('domain.purchase.offer_error_message'),
-        variant: "destructive",
-      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 text-white">
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">
+        <label htmlFor="amount" className="block text-sm font-medium mb-1">
           {t('domain.purchase.offer_amount')}
         </label>
-        <div className="relative">
-          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <Input
-            type="number"
-            value={formData.amount}
-            onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-            className="pl-10 bg-gray-900/50 border-white/20 text-white placeholder:text-gray-500"
-            placeholder={t('domain.purchase.offer_amount_placeholder')}
-            required
-          />
-        </div>
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">
-          {t('domain.purchase.contact_email')}
-        </label>
-        <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <Input
-            type="email"
-            value={formData.email}
-            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-            className="pl-10 bg-gray-900/50 border-white/20 text-white placeholder:text-gray-500"
-            placeholder={t('domain.purchase.email_placeholder')}
-            required
-          />
-        </div>
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">
-          {t('domain.purchase.contact_phone')}
-        </label>
-        <div className="relative">
-          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <Input
-            type="tel"
-            value={formData.phone}
-            onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-            className="pl-10 bg-gray-900/50 border-white/20 text-white placeholder:text-gray-500"
-            placeholder={t('domain.purchase.phone_placeholder')}
-            required
-          />
-        </div>
+        <Input
+          id="amount"
+          type="number"
+          value={formData.amount}
+          onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
+          min={domain.minimum_offer || 0}
+          required
+          className="bg-gray-800/50 border-white/10 text-white"
+          placeholder={t('domain.purchase.offer_amount_placeholder')}
+        />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">
+        <label htmlFor="email" className="block text-sm font-medium mb-1">
+          {t('domain.purchase.contact_email')}
+        </label>
+        <Input
+          id="email"
+          type="email"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          required
+          className="bg-gray-800/50 border-white/10 text-white"
+          placeholder={t('domain.purchase.email_placeholder')}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="phone" className="block text-sm font-medium mb-1">
+          {t('domain.purchase.contact_phone')}
+        </label>
+        <Input
+          id="phone"
+          type="tel"
+          value={formData.phone}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          required
+          className="bg-gray-800/50 border-white/10 text-white"
+          placeholder={t('domain.purchase.phone_placeholder')}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="message" className="block text-sm font-medium mb-1">
           {t('domain.purchase.message')}
         </label>
-        <textarea
+        <Textarea
+          id="message"
           value={formData.message}
-          onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
-          className="w-full px-4 py-2 bg-gray-900/50 border border-white/20 rounded-md text-white placeholder:text-gray-500"
-          rows={4}
+          onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+          className="bg-gray-800/50 border-white/10 text-white min-h-[100px]"
           placeholder={t('domain.purchase.message_placeholder')}
         />
       </div>
 
-      <Button 
-        type="submit" 
-        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white"
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? t('domain.purchase.submitting_offer') : t('domain.purchase.submit_offer')}
-      </Button>
+      <div className="flex gap-3">
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="flex-1 bg-blue-600 hover:bg-blue-700"
+        >
+          {isSubmitting ? t('domain.purchase.submitting_offer') : t('domain.purchase.submit_offer')}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onClose}
+          className="flex-1 border-white/10 text-white hover:bg-white/10"
+        >
+          {t('domain.purchase.cancel')}
+        </Button>
+      </div>
     </form>
   );
 };

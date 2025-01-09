@@ -46,7 +46,7 @@ const PurchaseDialog = ({
     }
 
     try {
-      // 保存报价到数据库
+      // Save offer to database
       const { error: offerError } = await supabase
         .from('domain_offers')
         .insert({
@@ -58,15 +58,14 @@ const PurchaseDialog = ({
 
       if (offerError) throw offerError;
 
-      // 发送通知邮件
+      // Send notification email
       const { error: notificationError } = await supabase.functions.invoke('send-offer-notification', {
         body: {
           domainName: domain.name,
           amount: offerData.amount,
           buyerEmail: offerData.email,
           buyerPhone: offerData.phone,
-          message: offerData.message,
-          ownerEmail: 'owner@domain.bf' // 这里应该是实际的域名所有者邮箱
+          message: offerData.message
         }
       });
 
@@ -134,27 +133,27 @@ const PurchaseDialog = ({
             
             <div className="flex gap-4">
               <Button 
-                className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={() => setMode('payment')}
               >
                 {t('domain.purchase.buy_now')}
               </Button>
               <Button 
                 variant="outline"
-                className="flex-1 border-white/20 text-white hover:bg-white/10 hover:border-white/30 transition-all duration-300"
+                className="flex-1 border-white/10 text-white hover:bg-white/10"
                 onClick={() => setMode('offer')}
               >
                 {t('domain.purchase.make_offer')}
               </Button>
             </div>
 
-            <div className="flex items-start gap-4 p-6 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
+            <div className="flex items-start gap-4 p-6 bg-gray-800/50 rounded-xl border border-white/10">
               <ShieldCheck className="h-6 w-6 text-blue-300 mt-1" />
               <div className="space-y-1">
                 <p className="font-semibold text-white">
                   {t('domain.purchase.secure_transaction')}
                 </p>
-                <p className="text-white/80 text-sm">
+                <p className="text-gray-300 text-sm">
                   {t('domain.purchase.protection')}
                 </p>
               </div>
@@ -166,7 +165,7 @@ const PurchaseDialog = ({
 
   return (
     <Dialog open={!!domain} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-gray-900/95 to-black/95 backdrop-blur-lg border border-white/20 p-0 overflow-hidden shadow-2xl">
+      <DialogContent className="sm:max-w-[500px] bg-gradient-to-br from-gray-900 to-black border border-white/20 p-0 overflow-hidden">
         <PurchaseHeader domainName={domain.name} />
         {renderContent()}
       </DialogContent>
