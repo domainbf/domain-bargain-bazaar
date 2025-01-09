@@ -6,11 +6,26 @@ import { useToast } from '@/components/ui/use-toast';
 const defaultTranslations = {
   'domain.purchase.buy_now': '立即购买',
   'domain.purchase.make_offer': '我要出价',
-  'domain.purchase.secure_transaction': '安全交易',
+  'domain.purchase.secure_transaction': '安全交易保障',
   'domain.purchase.protection': '所有交易都受到我们的购买保护',
   'domain.purchase.error': '提交失败',
   'domain.purchase.domain_no_owner': '域名没有所有者',
-  // ... 其他默认翻译
+  'domain.purchase.price_label': '购买价格',
+  'domain.purchase.back': '返回',
+  'domain.purchase.offer_amount': '出价金额',
+  'domain.purchase.offer_amount_placeholder': '请输入您的出价金额',
+  'domain.purchase.contact_email': '联系邮箱',
+  'domain.purchase.email_placeholder': '请输入您的邮箱',
+  'domain.purchase.contact_phone': '联系电话',
+  'domain.purchase.phone_placeholder': '请输入您的电话',
+  'domain.purchase.message': '留言信息',
+  'domain.purchase.message_placeholder': '请输入您想告诉卖家的信息',
+  'domain.purchase.submit_offer': '提交报价',
+  'domain.purchase.submitting_offer': '正在提交...',
+  'domain.purchase.offer_submitted': '报价已提交',
+  'domain.purchase.offer_success_message': '您的报价已成功提交，我们会尽快通知域名持有人。',
+  'domain.purchase.offer_error': '提交报价失败',
+  'domain.purchase.offer_error_message': '提交报价时发生错误，请稍后重试。'
 };
 
 export const useTranslation = () => {
