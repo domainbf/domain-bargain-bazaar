@@ -9,7 +9,7 @@ export const PriceDisplay = ({ price }: PriceDisplayProps) => {
   const { t } = useTranslation();
   
   return (
-    <div className="bg-gray-900/80 backdrop-blur-sm border border-white/20 rounded-lg p-6">
+    <div className="bg-gray-800/50 backdrop-blur-sm border border-white/20 rounded-lg p-6">
       <div className="mb-2 text-sm font-medium text-gray-300">
         {t('domain.purchase.price_label')}
       </div>

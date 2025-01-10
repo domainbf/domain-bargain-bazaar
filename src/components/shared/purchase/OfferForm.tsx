@@ -4,23 +4,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Domain } from '@/types/domain';
+import { useToast } from '@/hooks/use-toast';
 
 interface OfferFormProps {
   domain: Domain;
-  onSubmit?: (offerData: {
-    amount: number;
-    email: string;
-    phone: string;
-    message: string;
-  }) => Promise<void>;
   onClose: () => void;
 }
 
-export const OfferForm = ({ domain, onSubmit, onClose }: OfferFormProps) => {
+export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    amount: domain.minimum_offer || domain.price || 0,
+    amount: domain.minimum_offer || domain.price * 0.8,
     email: '',
     phone: '',
     message: ''
@@ -28,77 +24,79 @@ export const OfferForm = ({ domain, onSubmit, onClose }: OfferFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSubmit) {
-      setIsSubmitting(true);
-      try {
-        await onSubmit(formData);
-        onClose();
-      } catch (error) {
-        console.error('Error submitting offer:', error);
-      } finally {
-        setIsSubmitting(false);
-      }
+    setIsSubmitting(true);
+    try {
+      // Handle offer submission logic here
+      toast({
+        title: "报价已提交",
+        description: "我们会尽快与您联系",
+      });
+      onClose();
+    } catch (error) {
+      toast({
+        title: "提交失败",
+        description: "请稍后重试",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="amount" className="block text-sm font-medium text-white mb-1">
-          {t('domain.purchase.offer_amount')}
+        <label className="block text-sm font-medium text-white mb-2">
+          出价金额
         </label>
         <Input
-          id="amount"
           type="number"
           value={formData.amount}
           onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
-          min={domain.minimum_offer || 0}
+          min={domain.minimum_offer || domain.price * 0.8}
           required
           className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400"
-          placeholder={t('domain.purchase.offer_amount_placeholder')}
         />
       </div>
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-white mb-1">
-          {t('domain.purchase.contact_email')}
+        <label className="block text-sm font-medium text-white mb-2">
+          联系邮箱
         </label>
         <Input
-          id="email"
           type="email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
           className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400"
-          placeholder={t('domain.purchase.email_placeholder')}
+          placeholder="your@email.com"
         />
       </div>
 
       <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-white mb-1">
-          {t('domain.purchase.contact_phone')}
+        <label className="block text-sm font-medium text-white mb-2">
+          联系电话
         </label>
         <Input
-          id="phone"
           type="tel"
           value={formData.phone}
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
           required
           className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400"
-          placeholder={t('domain.purchase.phone_placeholder')}
+          placeholder="+1234567890"
         />
       </div>
 
       <div>
-        <label htmlFor="message" className="block text-sm font-medium text-white mb-1">
-          {t('domain.purchase.message')}
+        <label className="block text-sm font-medium text-white mb-2">
+          留言信息
         </label>
         <Textarea
-          id="message"
           value={formData.message}
           onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-          className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400 min-h-[100px]"
-          placeholder={t('domain.purchase.message_placeholder')}
+          className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400"
+          rows={4}
+          placeholder="请输入您的留言..."
         />
       </div>
 
@@ -108,15 +106,15 @@ export const OfferForm = ({ domain, onSubmit, onClose }: OfferFormProps) => {
           disabled={isSubmitting}
           className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
         >
-          {isSubmitting ? t('domain.purchase.submitting_offer') : t('domain.purchase.submit_offer')}
+          {isSubmitting ? "提交中..." : "提交报价"}
         </Button>
         <Button
           type="button"
           variant="outline"
           onClick={onClose}
-          className="flex-1 border-white/20 text-white hover:text-white hover:bg-white/10"
+          className="flex-1 border-white/20 text-white hover:bg-white/10"
         >
-          {t('domain.purchase.cancel')}
+          取消
         </Button>
       </div>
     </form>

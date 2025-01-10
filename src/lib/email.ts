@@ -39,6 +39,66 @@ export const sendEmail = async ({
   }
 };
 
+export const sendDomainNotification = async (
+  to: string,
+  type: 'offer' | 'purchase' | 'transfer',
+  data: {
+    domainName: string;
+    amount?: number;
+    message?: string;
+    buyerEmail?: string;
+    buyerPhone?: string;
+  }
+) => {
+  let subject = '';
+  let html = '';
+
+  switch (type) {
+    case 'offer':
+      subject = `新的域名报价 - ${data.domainName}`;
+      html = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+          <h2>新的域名报价</h2>
+          <p>您收到了一个新的域名报价：</p>
+          <p><strong>域名:</strong> ${data.domainName}</p>
+          <p><strong>报价金额:</strong> $${data.amount?.toLocaleString()}</p>
+          <p><strong>买家邮箱:</strong> ${data.buyerEmail}</p>
+          <p><strong>买家电话:</strong> ${data.buyerPhone}</p>
+          ${data.message ? `<p><strong>留言:</strong> ${data.message}</p>` : ''}
+          <p>请登录您的账户查看详细信息并回复此报价。</p>
+        </div>
+      `;
+      break;
+    case 'purchase':
+      subject = `域名购买确认 - ${data.domainName}`;
+      html = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+          <h2>域名购买确认</h2>
+          <p>您已成功购买域名 ${data.domainName}</p>
+          <p>购买金额: $${data.amount?.toLocaleString()}</p>
+          <p>我们的团队将尽快处理您的订单。</p>
+        </div>
+      `;
+      break;
+    case 'transfer':
+      subject = `域名转移通知 - ${data.domainName}`;
+      html = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+          <h2>域名转移通知</h2>
+          <p>您的域名 ${data.domainName} 正在进行转移。</p>
+          <p>请注意查收相关邮件并按照指引完成转移流程。</p>
+        </div>
+      `;
+      break;
+  }
+
+  await sendEmail({
+    to: [to],
+    subject,
+    html,
+  });
+};
+
 export const sendWelcomeEmail = async (email: string, confirmationUrl: string) => {
   console.log('Sending welcome email to:', email);
   await sendEmail({
@@ -82,43 +142,6 @@ export const sendFeedbackEmail = async (feedback: {
   await sendEmail({
     to: ['admin@domain.bf'],
     subject: `新的反馈信息 - 来自 ${feedback.name}`,
-    html,
-  });
-};
-
-export const sendPurchaseConfirmation = async (to: string, domainName: string, amount: number) => {
-  const html = `
-    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
-      <h2>域名购买确认</h2>
-      <p>您已成功购买域名 ${domainName}</p>
-      <p>购买金额: $${amount}</p>
-      <p>我们的团队将尽快处理您的订单。</p>
-      <p>如有任何问题，请联系 support@domain.bf</p>
-    </div>
-  `;
-
-  await sendEmail({
-    to: [to],
-    subject: `域名购买确认 - ${domainName}`,
-    html,
-  });
-};
-
-export const sendOfferNotification = async (to: string, domainName: string, amount: number) => {
-  const html = `
-    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
-      <h2>新的域名报价</h2>
-      <p>您收到了一个新的域名报价：</p>
-      <p><strong>域名:</strong> ${domainName}</p>
-      <p><strong>报价金额:</strong> $${amount}</p>
-      <p>请登录您的账户查看详细信息并回复此报价。</p>
-      <p>如有任何问题，请联系 support@domain.bf</p>
-    </div>
-  `;
-
-  await sendEmail({
-    to: [to],
-    subject: `新的域名报价 - ${domainName}`,
     html,
   });
 };
