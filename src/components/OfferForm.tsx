@@ -36,7 +36,6 @@ const OfferForm: React.FC<OfferFormProps> = ({ isOpen, onClose, selectedDomain }
         throw new Error('域名没有所有者');
       }
 
-      // 保存报价到数据库
       const { error: offerError } = await supabase
         .from('domain_offers')
         .insert({
@@ -48,7 +47,6 @@ const OfferForm: React.FC<OfferFormProps> = ({ isOpen, onClose, selectedDomain }
 
       if (offerError) throw offerError;
 
-      // 发送通知邮件
       const { error: notificationError } = await supabase.functions.invoke('send-offer-notification', {
         body: {
           domainName: selectedDomain.name,
@@ -56,7 +54,7 @@ const OfferForm: React.FC<OfferFormProps> = ({ isOpen, onClose, selectedDomain }
           buyerEmail: data.email,
           buyerPhone: data.phone,
           message: data.message,
-          ownerEmail: 'owner@domain.bf' // 这里应该是实际的域名所有者邮箱
+          ownerEmail: 'owner@domain.bf'
         }
       });
 
@@ -80,7 +78,7 @@ const OfferForm: React.FC<OfferFormProps> = ({ isOpen, onClose, selectedDomain }
   };
 
   return (
-    <div className="p-6">
+    <div className="bg-gray-900 p-6 rounded-lg">
       <DialogHeader>
         <DialogTitle className="text-xl font-bold text-white mb-2">
           为 {selectedDomain?.name} 出价
@@ -97,7 +95,7 @@ const OfferForm: React.FC<OfferFormProps> = ({ isOpen, onClose, selectedDomain }
             type="email" 
             placeholder="您的邮箱" 
             required 
-            className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+            className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-400"
           />
         </div>
         <div>
@@ -106,7 +104,7 @@ const OfferForm: React.FC<OfferFormProps> = ({ isOpen, onClose, selectedDomain }
             type="tel" 
             placeholder="您的电话" 
             required 
-            className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+            className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-400"
           />
         </div>
         <div className="relative">
@@ -117,7 +115,7 @@ const OfferForm: React.FC<OfferFormProps> = ({ isOpen, onClose, selectedDomain }
             placeholder="您的报价 (USD)" 
             min="1"
             required 
-            className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+            className="pl-10 bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-400"
           />
         </div>
         <div>
@@ -125,12 +123,12 @@ const OfferForm: React.FC<OfferFormProps> = ({ isOpen, onClose, selectedDomain }
             name="message" 
             placeholder="附加信息（可选）"
             rows={4}
-            className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+            className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-400"
           />
         </div>
         <Button 
           type="submit" 
-          className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white"
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
           disabled={isSubmitting}
         >
           {isSubmitting ? "提交中..." : "提交报价"}
