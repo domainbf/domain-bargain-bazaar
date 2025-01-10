@@ -1,32 +1,36 @@
-import { useState } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from '@/hooks/useTranslation';
+import { Textarea } from '@/components/ui/textarea';
 import { Domain } from '@/types/domain';
 import { useToast } from '@/hooks/use-toast';
 
 interface OfferFormProps {
   domain: Domain;
   onClose: () => void;
+  onSubmit: (data: {
+    amount: number;
+    email: string;
+    phone: string;
+    message: string;
+  }) => Promise<void>;
 }
 
-export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
-  const { t } = useTranslation();
+export const OfferForm: React.FC<OfferFormProps> = ({ domain, onClose, onSubmit }) => {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    amount: domain.minimum_offer || domain.price * 0.8,
-    email: '',
-    phone: '',
-    message: ''
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+    defaultValues: {
+      amount: domain.minimum_offer || domain.price * 0.8,
+      email: '',
+      phone: '',
+      message: ''
+    }
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const onSubmitForm = async (data: any) => {
     try {
-      // Handle offer submission logic here
+      await onSubmit(data);
       toast({
         title: "报价已提交",
         description: "我们会尽快与您联系",
@@ -38,25 +42,26 @@ export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
         description: "请稍后重试",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
       <div>
         <label className="block text-sm font-medium text-white mb-2">
           出价金额
         </label>
         <Input
           type="number"
-          value={formData.amount}
-          onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
-          min={domain.minimum_offer || domain.price * 0.8}
-          required
-          className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400"
+          {...register('amount', { 
+            required: true,
+            min: domain.minimum_offer || domain.price * 0.8 
+          })}
+          className="bg-gray-800/50 border-white/20 text-white"
         />
+        {errors.amount && (
+          <p className="text-red-500 text-sm mt-1">请输入有效金额</p>
+        )}
       </div>
 
       <div>
@@ -65,11 +70,8 @@ export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
         </label>
         <Input
           type="email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          required
-          className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400"
-          placeholder="your@email.com"
+          {...register('email', { required: true })}
+          className="bg-gray-800/50 border-white/20 text-white"
         />
       </div>
 
@@ -79,11 +81,8 @@ export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
         </label>
         <Input
           type="tel"
-          value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          required
-          className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400"
-          placeholder="+1234567890"
+          {...register('phone')}
+          className="bg-gray-800/50 border-white/20 text-white"
         />
       </div>
 
@@ -92,16 +91,14 @@ export const OfferForm = ({ domain, onClose }: OfferFormProps) => {
           留言信息
         </label>
         <Textarea
-          value={formData.message}
-          onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-          className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400"
+          {...register('message')}
+          className="bg-gray-800/50 border-white/20 text-white"
           rows={4}
-          placeholder="请输入您的留言..."
         />
       </div>
 
       <div className="flex gap-3">
-        <Button
+        <Button 
           type="submit"
           disabled={isSubmitting}
           className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
