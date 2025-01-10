@@ -1,0 +1,16 @@
+{
+  "domain.status.active": "使用中",
+  "domain.status.expired": "已过期",
+  "domain.status.pending": "待处理",
+  "domain.management.title": "域名管理",
+  "domain.management.browse": "浏览更多域名",
+  "domain.management.overview": "概览",
+  "domain.management.dns": "DNS 设置",
+  "domain.management.analytics": "统计",
+  "domain.management.registration_date": "注册日期",
+  "domain.management.expiry_date": "到期日期",
+  "domain.management.current_value": "当前价值",
+  "domain.management.no_domains": "您还没有任何域名",
+  "domain.management.browse_domains": "浏览域名",
+  "domain.management.analytics_coming_soon": "域名访问统计功能即将上线"
+}
