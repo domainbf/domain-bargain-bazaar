@@ -18,21 +18,38 @@ export const sendEmail = async ({
     console.log('Attempting to send email to:', to);
     console.log('Email subject:', subject);
     
-    const response = await supabase.functions.invoke('send-email', {
-      body: {
+    const { data: resendApiKey } = await supabase
+      .from('secrets')
+      .select('value')
+      .eq('name', 'RESEND_API_KEY')
+      .single();
+
+    if (!resendApiKey?.value) {
+      throw new Error('Resend API key not found');
+    }
+
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${resendApiKey.value}`,
+      },
+      body: JSON.stringify({
+        from: 'Domain.BF <noreply@domain.bf>',
         to,
         subject,
         html,
-      },
+      }),
     });
 
-    if (response.error) {
-      console.error('Error response from send-email function:', response.error);
-      throw new Error(response.error.message || 'Failed to send email');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to send email');
     }
 
-    console.log('Email sent successfully:', response.data);
-    return response.data;
+    const data = await response.json();
+    console.log('Email sent successfully:', data);
+    return data;
   } catch (error) {
     console.error('Error sending email:', error);
     throw error;
