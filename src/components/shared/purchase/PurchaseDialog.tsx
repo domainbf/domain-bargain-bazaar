@@ -59,10 +59,6 @@ const PurchaseDialog = ({
             <OfferForm
               domain={domain}
               onClose={() => onOpenChange(false)}
-              onSubmit={async (data) => {
-                // Handle offer submission
-                onOpenChange(false);
-              }}
             />
           </div>
         );
@@ -87,7 +83,7 @@ const PurchaseDialog = ({
               </Button>
             </div>
 
-            <div className="flex items-start gap-4 p-6 bg-gray-800 rounded-xl border border-gray-700">
+            <div className="flex items-start gap-4 p-6 bg-gray-800/50 rounded-xl border border-white/10">
               <ShieldCheck className="h-6 w-6 text-blue-400 mt-1" />
               <div className="space-y-1">
                 <p className="font-semibold text-white">

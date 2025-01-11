@@ -17,9 +17,10 @@ interface OfferFormData {
 interface OfferFormProps {
   domain: Domain;
   onClose: () => void;
+  onSubmit?: (data: OfferFormData) => Promise<void>;
 }
 
-export const OfferForm: React.FC<OfferFormProps> = ({ domain, onClose }) => {
+export const OfferForm: React.FC<OfferFormProps> = ({ domain, onClose, onSubmit }) => {
   const { toast } = useToast();
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<OfferFormData>({
     defaultValues: {
@@ -57,6 +58,11 @@ export const OfferForm: React.FC<OfferFormProps> = ({ domain, onClose }) => {
       });
 
       if (notificationError) throw notificationError;
+
+      // Call the onSubmit prop if provided
+      if (onSubmit) {
+        await onSubmit(data);
+      }
 
       toast({
         title: "报价已提交",
