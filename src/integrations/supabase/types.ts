@@ -211,6 +211,39 @@ export type Database = {
         }
         Relationships: []
       }
+      email_templates: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          name: string
+          subject: string
+          updated_at: string
+          variables: Json | null
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          subject: string
+          updated_at?: string
+          variables?: Json | null
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          subject?: string
+          updated_at?: string
+          variables?: Json | null
+        }
+        Relationships: []
+      }
       languages: {
         Row: {
           code: string
@@ -309,22 +342,31 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          description: string | null
           id: string
+          is_multilingual: boolean | null
           key: string
+          section: string | null
           type: string | null
           updated_at: string
           value: string | null
         }
         Insert: {
+          description?: string | null
           id?: string
+          is_multilingual?: boolean | null
           key: string
+          section?: string | null
           type?: string | null
           updated_at?: string
           value?: string | null
         }
         Update: {
+          description?: string | null
           id?: string
+          is_multilingual?: boolean | null
           key?: string
+          section?: string | null
           type?: string | null
           updated_at?: string
           value?: string | null

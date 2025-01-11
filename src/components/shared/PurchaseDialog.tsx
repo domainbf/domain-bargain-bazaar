@@ -49,7 +49,7 @@ const PurchaseDialog = ({
             <Button 
               variant="ghost" 
               onClick={() => setMode('info')}
-              className="mb-4 text-white hover:text-white/90 hover:bg-white/10"
+              className="mb-4 text-gray-200 hover:text-white hover:bg-gray-800"
             >
               ← {t('domain.purchase.back')}
             </Button>
@@ -66,7 +66,7 @@ const PurchaseDialog = ({
             <Button 
               variant="ghost" 
               onClick={() => setMode('info')}
-              className="mb-4 text-white hover:text-white/90 hover:bg-white/10"
+              className="mb-4 text-gray-200 hover:text-white hover:bg-gray-800"
             >
               ← {t('domain.purchase.back')}
             </Button>
@@ -91,7 +91,7 @@ const PurchaseDialog = ({
               </Button>
               <Button 
                 variant="outline"
-                className="flex-1 border-white/20 text-white hover:bg-white/10"
+                className="flex-1 border-gray-700 text-gray-200 hover:bg-gray-800"
                 onClick={() => setMode('offer')}
               >
                 {t('domain.purchase.make_offer')}
