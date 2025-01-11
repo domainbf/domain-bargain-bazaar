@@ -31,11 +31,11 @@ const PurchaseDialog = ({
     switch (mode) {
       case 'payment':
         return (
-          <div className="p-8 space-y-6">
+          <div className="p-8 space-y-6 bg-gray-900">
             <Button 
               variant="ghost" 
               onClick={() => setMode('info')}
-              className="mb-4 text-white hover:text-white/90 hover:bg-white/10"
+              className="mb-4 text-gray-200 hover:text-white hover:bg-gray-800"
             >
               ← {t('domain.purchase.back')}
             </Button>
@@ -48,23 +48,27 @@ const PurchaseDialog = ({
         );
       case 'offer':
         return (
-          <div className="p-8 space-y-6">
+          <div className="p-8 space-y-6 bg-gray-900">
             <Button 
               variant="ghost" 
               onClick={() => setMode('info')}
-              className="mb-4 text-white hover:text-white/90 hover:bg-white/10"
+              className="mb-4 text-gray-200 hover:text-white hover:bg-gray-800"
             >
               ← {t('domain.purchase.back')}
             </Button>
             <OfferForm
               domain={domain}
               onClose={() => onOpenChange(false)}
+              onSubmit={async (data) => {
+                // Handle offer submission
+                onOpenChange(false);
+              }}
             />
           </div>
         );
       default:
         return (
-          <div className="p-8 space-y-6">
+          <div className="p-8 space-y-6 bg-gray-900">
             <PriceDisplay price={domain.price} />
             
             <div className="flex gap-4">
@@ -76,14 +80,14 @@ const PurchaseDialog = ({
               </Button>
               <Button 
                 variant="outline"
-                className="flex-1 border-white/20 text-white hover:text-white hover:bg-white/10"
+                className="flex-1 border-gray-700 text-gray-200 hover:bg-gray-800"
                 onClick={() => setMode('offer')}
               >
                 {t('domain.purchase.make_offer')}
               </Button>
             </div>
 
-            <div className="flex items-start gap-4 p-6 bg-gray-800/50 rounded-xl border border-white/10">
+            <div className="flex items-start gap-4 p-6 bg-gray-800 rounded-xl border border-gray-700">
               <ShieldCheck className="h-6 w-6 text-blue-400 mt-1" />
               <div className="space-y-1">
                 <p className="font-semibold text-white">
@@ -101,7 +105,7 @@ const PurchaseDialog = ({
 
   return (
     <Dialog open={!!domain} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] bg-gray-900 border border-white/20 p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[500px] bg-gray-900 border-gray-700 p-0 overflow-hidden">
         <PurchaseHeader domainName={domain.name} />
         {renderContent()}
       </DialogContent>

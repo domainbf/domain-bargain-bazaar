@@ -46,9 +46,9 @@ export const OfferForm: React.FC<OfferFormProps> = ({ domain, onClose, onSubmit 
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6 bg-gray-900 p-6 rounded-lg">
       <div>
-        <label className="block text-sm font-medium text-white mb-2">
+        <label className="block text-sm font-medium text-gray-200 mb-2">
           出价金额
         </label>
         <Input
@@ -57,42 +57,42 @@ export const OfferForm: React.FC<OfferFormProps> = ({ domain, onClose, onSubmit 
             required: true,
             min: domain.minimum_offer || domain.price * 0.8 
           })}
-          className="bg-gray-800/50 border-white/20 text-white"
+          className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
         />
         {errors.amount && (
-          <p className="text-red-500 text-sm mt-1">请输入有效金额</p>
+          <p className="text-red-400 text-sm mt-1">请输入有效金额</p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-2">
+        <label className="block text-sm font-medium text-gray-200 mb-2">
           联系邮箱
         </label>
         <Input
           type="email"
           {...register('email', { required: true })}
-          className="bg-gray-800/50 border-white/20 text-white"
+          className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-2">
+        <label className="block text-sm font-medium text-gray-200 mb-2">
           联系电话
         </label>
         <Input
           type="tel"
           {...register('phone')}
-          className="bg-gray-800/50 border-white/20 text-white"
+          className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-white mb-2">
+        <label className="block text-sm font-medium text-gray-200 mb-2">
           留言信息
         </label>
         <Textarea
           {...register('message')}
-          className="bg-gray-800/50 border-white/20 text-white"
+          className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
           rows={4}
         />
       </div>
@@ -109,7 +109,7 @@ export const OfferForm: React.FC<OfferFormProps> = ({ domain, onClose, onSubmit 
           type="button"
           variant="outline"
           onClick={onClose}
-          className="flex-1 border-white/20 text-white hover:bg-white/10"
+          className="flex-1 border-gray-700 text-gray-200 hover:bg-gray-800"
         >
           取消
         </Button>
