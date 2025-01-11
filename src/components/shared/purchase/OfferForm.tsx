@@ -31,7 +31,7 @@ export const OfferForm: React.FC<OfferFormProps> = ({ domain, onClose, onSubmit 
     }
   });
 
-  const handleFormSubmit = async (data: OfferFormData) => {
+  const onSubmitForm = async (data: OfferFormData) => {
     try {
       // Create the offer in the database
       const { error: offerError } = await supabase
@@ -80,7 +80,7 @@ export const OfferForm: React.FC<OfferFormProps> = ({ domain, onClose, onSubmit 
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
       <div>
         <label className="block text-sm font-medium text-gray-200 mb-2">
           出价金额
