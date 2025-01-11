@@ -1,164 +1,82 @@
 import { supabase } from './supabase';
-import {
-  getWelcomeEmailTemplate,
-  getPasswordResetTemplate,
-  getEmailChangeConfirmationTemplate
-} from './emailTemplates';
 
-export const sendEmail = async ({
-  to,
-  subject,
-  html
-}: {
+interface EmailParams {
   to: string[];
   subject: string;
   html: string;
-}) => {
+}
+
+export const sendEmail = async ({ to, subject, html }: EmailParams) => {
   try {
-    console.log('Attempting to send email to:', to);
-    console.log('Email subject:', subject);
-    
-    const { data: resendApiKey } = await supabase
-      .from('secrets')
-      .select('value')
-      .eq('name', 'RESEND_API_KEY')
-      .single();
-
-    if (!resendApiKey?.value) {
-      throw new Error('Resend API key not found');
-    }
-
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${resendApiKey.value}`,
-      },
-      body: JSON.stringify({
-        from: 'Domain.BF <noreply@domain.bf>',
-        to,
-        subject,
-        html,
-      }),
+    const { data, error } = await supabase.functions.invoke('send-email', {
+      body: { to, subject, html }
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to send email');
+    if (error) {
+      console.error('Error sending email:', error);
+      throw error;
     }
 
-    const data = await response.json();
-    console.log('Email sent successfully:', data);
     return data;
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('Error in sendEmail:', error);
     throw error;
   }
 };
 
-export const sendDomainNotification = async (
-  to: string,
-  type: 'offer' | 'purchase' | 'transfer',
-  data: {
-    domainName: string;
-    amount?: number;
-    message?: string;
-    buyerEmail?: string;
-    buyerPhone?: string;
-  }
-) => {
-  let subject = '';
-  let html = '';
-
-  switch (type) {
-    case 'offer':
-      subject = `新的域名报价 - ${data.domainName}`;
-      html = `
-        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
-          <h2>新的域名报价</h2>
-          <p>您收到了一个新的域名报价：</p>
-          <p><strong>域名:</strong> ${data.domainName}</p>
-          <p><strong>报价金额:</strong> $${data.amount?.toLocaleString()}</p>
-          <p><strong>买家邮箱:</strong> ${data.buyerEmail}</p>
-          <p><strong>买家电话:</strong> ${data.buyerPhone}</p>
-          ${data.message ? `<p><strong>留言:</strong> ${data.message}</p>` : ''}
-          <p>请登录您的账户查看详细信息并回复此报价。</p>
-        </div>
-      `;
-      break;
-    case 'purchase':
-      subject = `域名购买确认 - ${data.domainName}`;
-      html = `
-        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
-          <h2>域名购买确认</h2>
-          <p>您已成功购买域名 ${data.domainName}</p>
-          <p>购买金额: $${data.amount?.toLocaleString()}</p>
-          <p>我们的团队将尽快处理您的订单。</p>
-        </div>
-      `;
-      break;
-    case 'transfer':
-      subject = `域名转移通知 - ${data.domainName}`;
-      html = `
-        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
-          <h2>域名转移通知</h2>
-          <p>您的域名 ${data.domainName} 正在进行转移。</p>
-          <p>请注意查收相关邮件并按照指引完成转移流程。</p>
-        </div>
-      `;
-      break;
-  }
-
-  await sendEmail({
-    to: [to],
-    subject,
-    html,
-  });
-};
-
-export const sendWelcomeEmail = async (email: string, confirmationUrl: string) => {
-  console.log('Sending welcome email to:', email);
-  await sendEmail({
-    to: [email],
-    subject: '欢迎加入 Domain.BF - 请验证您的邮箱',
-    html: getWelcomeEmailTemplate(email, confirmationUrl),
-  });
-};
-
-export const sendPasswordResetEmail = async (email: string, resetUrl: string) => {
-  await sendEmail({
-    to: [email],
-    subject: 'Domain.BF - 重置密码请求',
-    html: getPasswordResetTemplate(resetUrl),
-  });
-};
-
-export const sendEmailChangeConfirmation = async (newEmail: string, confirmationUrl: string) => {
-  await sendEmail({
-    to: [newEmail],
-    subject: 'Domain.BF - 确认更改邮箱地址',
-    html: getEmailChangeConfirmationTemplate(newEmail, confirmationUrl),
-  });
-};
-
-export const sendFeedbackEmail = async (feedback: {
-  name: string;
-  email: string;
-  message: string;
-}) => {
-  const html = `
-    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
-      <h2>新的反馈信息</h2>
-      <p><strong>姓名:</strong> ${feedback.name}</p>
-      <p><strong>邮箱:</strong> ${feedback.email}</p>
-      <p><strong>消息:</strong></p>
-      <p style="white-space: pre-wrap;">${feedback.message}</p>
+export const getWelcomeEmailTemplate = (email: string, confirmationUrl: string) => {
+  return `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #333;">欢迎加入 Domain.BF</h2>
+      <p>您好！</p>
+      <p>感谢您注册 Domain.BF。请点击下面的按钮验证您的邮箱地址：</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${confirmationUrl}" 
+           style="background-color: #4F46E5; color: white; padding: 12px 24px; 
+                  text-decoration: none; border-radius: 5px; display: inline-block;">
+          验证邮箱
+        </a>
+      </div>
+      <p>如果您没有注册 Domain.BF 账号，请忽略此邮件。</p>
+      <p>谢谢！<br>Domain.BF 团队</p>
     </div>
   `;
+};
 
-  await sendEmail({
-    to: ['admin@domain.bf'],
-    subject: `新的反馈信息 - 来自 ${feedback.name}`,
-    html,
-  });
+export const getPasswordResetTemplate = (resetUrl: string) => {
+  return `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #333;">重置密码</h2>
+      <p>您好！</p>
+      <p>我们收到了重置您 Domain.BF 账号密码的请求。请点击下面的按钮重置密码：</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${resetUrl}" 
+           style="background-color: #4F46E5; color: white; padding: 12px 24px; 
+                  text-decoration: none; border-radius: 5px; display: inline-block;">
+          重置密码
+        </a>
+      </div>
+      <p>如果您没有请求重置密码，请忽略此邮件。</p>
+      <p>谢谢！<br>Domain.BF 团队</p>
+    </div>
+  `;
+};
+
+export const getEmailChangeConfirmationTemplate = (newEmail: string, confirmationUrl: string) => {
+  return `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #333;">确认更改邮箱地址</h2>
+      <p>您好！</p>
+      <p>我们收到了将您的 Domain.BF 账号邮箱更改为 ${newEmail} 的请求。请点击下面的按钮确认此更改：</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${confirmationUrl}" 
+           style="background-color: #4F46E5; color: white; padding: 12px 24px; 
+                  text-decoration: none; border-radius: 5px; display: inline-block;">
+          确认更改
+        </a>
+      </div>
+      <p>如果您没有请求更改邮箱地址，请忽略此邮件。</p>
+      <p>谢谢！<br>Domain.BF 团队</p>
+    </div>
+  `;
 };
