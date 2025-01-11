@@ -27,20 +27,6 @@ const PurchaseDialog = ({
 
   if (!domain) return null;
 
-  const handleOfferSubmit = async (offerData: {
-    amount: number;
-    email: string;
-    phone: string;
-    message: string;
-  }) => {
-    try {
-      // 处理报价提交逻辑
-      onOpenChange(false);
-    } catch (error) {
-      console.error('Error submitting offer:', error);
-    }
-  };
-
   const renderContent = () => {
     switch (mode) {
       case 'payment':
@@ -73,7 +59,6 @@ const PurchaseDialog = ({
             <OfferForm
               domain={domain}
               onClose={() => onOpenChange(false)}
-              onSubmit={handleOfferSubmit}
             />
           </div>
         );
@@ -116,7 +101,7 @@ const PurchaseDialog = ({
 
   return (
     <Dialog open={!!domain} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] bg-gray-900 border-white/20 p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[500px] bg-gray-900 border-gray-700 p-0 overflow-hidden">
         <PurchaseHeader domainName={domain.name} />
         {renderContent()}
       </DialogContent>

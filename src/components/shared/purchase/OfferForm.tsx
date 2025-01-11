@@ -5,21 +5,23 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Domain } from '@/types/domain';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
+
+interface OfferFormData {
+  amount: number;
+  email: string;
+  phone: string;
+  message: string;
+}
 
 interface OfferFormProps {
   domain: Domain;
   onClose: () => void;
-  onSubmit: (data: {
-    amount: number;
-    email: string;
-    phone: string;
-    message: string;
-  }) => Promise<void>;
 }
 
-export const OfferForm: React.FC<OfferFormProps> = ({ domain, onClose, onSubmit }) => {
+export const OfferForm: React.FC<OfferFormProps> = ({ domain, onClose }) => {
   const { toast } = useToast();
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<OfferFormData>({
     defaultValues: {
       amount: domain.minimum_offer || domain.price * 0.8,
       email: '',
@@ -28,18 +30,44 @@ export const OfferForm: React.FC<OfferFormProps> = ({ domain, onClose, onSubmit 
     }
   });
 
-  const handleFormSubmit = async (data: any) => {
+  const handleFormSubmit = async (data: OfferFormData) => {
     try {
-      await onSubmit(data);
+      // Create the offer in the database
+      const { error: offerError } = await supabase
+        .from('domain_offers')
+        .insert({
+          domain_id: domain.id,
+          seller_id: domain.owner_id,
+          amount: data.amount,
+          message: data.message
+        });
+
+      if (offerError) throw offerError;
+
+      // Send email notification
+      const { error: notificationError } = await supabase.functions.invoke('send-offer-notification', {
+        body: {
+          domainName: domain.name,
+          amount: data.amount,
+          buyerEmail: data.email,
+          buyerPhone: data.phone,
+          message: data.message,
+          ownerEmail: domain.owner_id // We'll get the actual email from the profiles table in the edge function
+        }
+      });
+
+      if (notificationError) throw notificationError;
+
       toast({
         title: "报价已提交",
         description: "我们会尽快与您联系",
       });
       onClose();
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error submitting offer:', error);
       toast({
         title: "提交失败",
-        description: "请稍后重试",
+        description: error.message || "请稍后重试",
         variant: "destructive",
       });
     }
