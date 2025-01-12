@@ -3,14 +3,14 @@ import { ShoppingCart } from 'lucide-react';
 import { DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 interface PurchaseHeaderProps {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   domainName: string;
 }
 
 export const PurchaseHeader: React.FC<PurchaseHeaderProps> = ({ 
-  title, 
-  description, 
+  title = "购买域名", 
+  description = "您正在购买域名:",
   domainName 
 }) => {
   return (
