@@ -1,6 +1,5 @@
 import React from 'react';
 import PayPalButton from '@/components/PayPalButton';
-import { formatCurrency } from '@/lib/utils';
 
 interface PaymentSectionProps {
   amount: number;
@@ -20,11 +19,11 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
           确认付款
         </h3>
         <p className="text-3xl font-bold text-white">
-          {formatCurrency(amount)}
+          ${amount.toLocaleString()}
         </p>
       </div>
       
-      <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+      <div className="bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-lg p-4 border border-white/10">
         <PayPalButton
           amount={amount}
           onSuccess={onSuccess}
