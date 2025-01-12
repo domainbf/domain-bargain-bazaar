@@ -133,6 +133,47 @@ export type Database = {
           },
         ]
       }
+      domain_sale_settings: {
+        Row: {
+          created_at: string | null
+          domain_id: string | null
+          escrow_service: boolean | null
+          id: string
+          installment_available: boolean | null
+          installment_terms: Json | null
+          payment_methods: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          domain_id?: string | null
+          escrow_service?: boolean | null
+          id?: string
+          installment_available?: boolean | null
+          installment_terms?: Json | null
+          payment_methods?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          domain_id?: string | null
+          escrow_service?: boolean | null
+          id?: string
+          installment_available?: boolean | null
+          installment_terms?: Json | null
+          payment_methods?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "domain_sale_settings_domain_id_fkey"
+            columns: ["domain_id"]
+            isOneToOne: false
+            referencedRelation: "domains"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       domains: {
         Row: {
           buy_now_price: number | null
@@ -141,6 +182,7 @@ export type Database = {
           description: string | null
           expiry_date: string | null
           featured_rank: number | null
+          featured_until: string | null
           id: string
           is_featured: boolean | null
           keywords: string[] | null
@@ -148,13 +190,16 @@ export type Database = {
           meta_description: string | null
           meta_title: string | null
           minimum_offer: number | null
+          minimum_price: number | null
           name: string
+          negotiable: boolean | null
           owner_id: string | null
           payment_plans: Json | null
           previous_sales: Json | null
           price: number
           registrar: string | null
           registration_date: string | null
+          sale_type: string | null
           status: string | null
           traffic_stats: Json | null
           verification_status: string | null
@@ -166,6 +211,7 @@ export type Database = {
           description?: string | null
           expiry_date?: string | null
           featured_rank?: number | null
+          featured_until?: string | null
           id?: string
           is_featured?: boolean | null
           keywords?: string[] | null
@@ -173,13 +219,16 @@ export type Database = {
           meta_description?: string | null
           meta_title?: string | null
           minimum_offer?: number | null
+          minimum_price?: number | null
           name: string
+          negotiable?: boolean | null
           owner_id?: string | null
           payment_plans?: Json | null
           previous_sales?: Json | null
           price: number
           registrar?: string | null
           registration_date?: string | null
+          sale_type?: string | null
           status?: string | null
           traffic_stats?: Json | null
           verification_status?: string | null
@@ -191,6 +240,7 @@ export type Database = {
           description?: string | null
           expiry_date?: string | null
           featured_rank?: number | null
+          featured_until?: string | null
           id?: string
           is_featured?: boolean | null
           keywords?: string[] | null
@@ -198,13 +248,16 @@ export type Database = {
           meta_description?: string | null
           meta_title?: string | null
           minimum_offer?: number | null
+          minimum_price?: number | null
           name?: string
+          negotiable?: boolean | null
           owner_id?: string | null
           payment_plans?: Json | null
           previous_sales?: Json | null
           price?: number
           registrar?: string | null
           registration_date?: string | null
+          sale_type?: string | null
           status?: string | null
           traffic_stats?: Json | null
           verification_status?: string | null
@@ -337,6 +390,36 @@ export type Database = {
           total_sales?: number | null
           updated_at?: string
           username?: string | null
+        }
+        Relationships: []
+      }
+      site_content: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          key: string
+          section: string | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          key: string
+          section?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          key?: string
+          section?: string | null
+          type?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }

@@ -11,10 +11,38 @@ import ScrollingDomains from '@/components/home/ScrollingDomains';
 import ContactForm from '@/components/ContactForm';
 import FeaturedDomains from '@/components/FeaturedDomains';
 import { useToast } from '@/components/ui/use-toast';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { ShoppingBag, ListPlus } from 'lucide-react';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const { data: session } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      return session;
+    }
+  });
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user?.id
+  });
 
   const { data: siteSettings, error: settingsError } = useQuery({
     queryKey: ['site-settings'],
@@ -51,12 +79,36 @@ const Index = () => {
         setSearchQuery={setSearchQuery}
       />
 
-      <TrendingDomains domains={[]} />
+      {session && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Button
+              onClick={() => navigate('/dashboard')}
+              className="bg-blue-600 hover:bg-blue-700"
+              size="lg"
+            >
+              <ShoppingBag className="mr-2 h-5 w-5" />
+              我的域名
+            </Button>
+            
+            {profile?.is_seller && (
+              <Button
+                onClick={() => navigate('/domains/new')}
+                className="bg-green-600 hover:bg-green-700"
+                size="lg"
+              >
+                <ListPlus className="mr-2 h-5 w-5" />
+                出售域名
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
 
       <main className="relative z-10 max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="mb-20">
           <h2 className="text-3xl font-bold text-white mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-            
+            精选域名
           </h2>
           <FeaturedDomains />
         </div>
