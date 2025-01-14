@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ErrorBoundary } from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { MessageSquare } from 'lucide-react';
@@ -15,7 +15,20 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, ListPlus } from 'lucide-react';
 
-const Index = () => {
+// Error Fallback Component
+const ErrorFallback = ({ error, resetErrorBoundary }) => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#1a1c2e] to-[#2a2d4a] flex items-center justify-center">
+      <div className="text-center p-8 bg-white/5 backdrop-blur-lg rounded-xl border border-white/10">
+        <h2 className="text-2xl font-bold text-white mb-4">Something went wrong</h2>
+        <p className="text-gray-300 mb-6">{error.message}</p>
+        <Button onClick={resetErrorBoundary}>Try again</Button>
+      </div>
+    </div>
+  );
+};
+
+const IndexContent = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -25,6 +38,15 @@ const Index = () => {
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
       return session;
+    },
+    retry: 3,
+    onError: (error) => {
+      console.error('Session fetch error:', error);
+      toast({
+        title: "Error loading session",
+        description: "Please try refreshing the page",
+        variant: "destructive",
+      });
     }
   });
 
@@ -41,7 +63,16 @@ const Index = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!session?.user?.id
+    enabled: !!session?.user?.id,
+    retry: 3,
+    onError: (error) => {
+      console.error('Profile fetch error:', error);
+      toast({
+        title: "Error loading profile",
+        description: "Please try refreshing the page",
+        variant: "destructive",
+      });
+    }
   });
 
   const { data: siteSettings, error: settingsError } = useQuery({
@@ -144,6 +175,14 @@ const Index = () => {
 
       <Footer />
     </div>
+  );
+};
+
+const Index = () => {
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <IndexContent />
+    </ErrorBoundary>
   );
 };
 
