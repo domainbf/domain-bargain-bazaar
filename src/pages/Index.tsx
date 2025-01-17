@@ -1,4 +1,4 @@
-import React, { ErrorBoundary } from 'react';
+import React from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { MessageSquare } from 'lucide-react';
@@ -14,9 +14,10 @@ import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, ListPlus } from 'lucide-react';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
 
 // Error Fallback Component
-const ErrorFallback = ({ error, resetErrorBoundary }) => {
+const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a1c2e] to-[#2a2d4a] flex items-center justify-center">
       <div className="text-center p-8 bg-white/5 backdrop-blur-lg rounded-xl border border-white/10">
@@ -40,13 +41,15 @@ const IndexContent = () => {
       return session;
     },
     retry: 3,
-    onError: (error) => {
-      console.error('Session fetch error:', error);
-      toast({
-        title: "Error loading session",
-        description: "Please try refreshing the page",
-        variant: "destructive",
-      });
+    meta: {
+      onError: (error: Error) => {
+        console.error('Session fetch error:', error);
+        toast({
+          title: "Error loading session",
+          description: "Please try refreshing the page",
+          variant: "destructive",
+        });
+      }
     }
   });
 
@@ -65,13 +68,15 @@ const IndexContent = () => {
     },
     enabled: !!session?.user?.id,
     retry: 3,
-    onError: (error) => {
-      console.error('Profile fetch error:', error);
-      toast({
-        title: "Error loading profile",
-        description: "Please try refreshing the page",
-        variant: "destructive",
-      });
+    meta: {
+      onError: (error: Error) => {
+        console.error('Profile fetch error:', error);
+        toast({
+          title: "Error loading profile",
+          description: "Please try refreshing the page",
+          variant: "destructive",
+        });
+      }
     }
   });
 
