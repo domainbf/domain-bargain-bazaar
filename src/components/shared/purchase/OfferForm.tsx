@@ -135,15 +135,14 @@ export const OfferForm: React.FC<OfferFormProps> = ({ domain, onClose, onSubmit 
         <Button 
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+          className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
         >
           {isSubmitting ? "提交中..." : "提交报价"}
         </Button>
         <Button
           type="button"
-          variant="outline"
           onClick={onClose}
-          className="flex-1 border-gray-700 text-gray-200 hover:bg-gray-800"
+          className="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-700 border-blue-300"
         >
           取消
         </Button>
