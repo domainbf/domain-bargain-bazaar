@@ -35,7 +35,7 @@ const OfferForm: React.FC<OfferFormProps> = ({ isOpen, onClose, selectedDomain }
         message: formData.get('message') as string,
         domain_id: selectedDomain?.id,
         seller_id: selectedDomain?.owner_id,
-        buyer_id: user.id // Set the buyer_id to the current user's ID
+        buyer_id: user.id
       };
 
       if (!selectedDomain?.owner_id) {
