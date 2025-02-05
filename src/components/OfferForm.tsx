@@ -28,12 +28,12 @@ const OfferForm: React.FC<OfferFormProps> = ({ isOpen, onClose, selectedDomain }
       <form onSubmit={handleSubmit} className="space-y-4 mt-4">
         <OfferFormFields isSubmitting={isSubmitting} />
         <Button 
-          type="submit" 
-          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "提交中..." : "提交报价"}
-        </Button>
+  type="submit" 
+  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+  disabled={isSubmitting}
+>
+  {isSubmitting ? "提交中..." : "提交报价"}
+</Button>
       </form>
     </div>
   );
