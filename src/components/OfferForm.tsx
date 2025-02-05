@@ -21,17 +21,23 @@ const OfferForm: React.FC<OfferFormProps> = ({ isOpen, onClose, selectedDomain }
     e.preventDefault();
     setIsSubmitting(true);
 
-    const formData = new FormData(e.target as HTMLFormElement);
-    const data = {
-      amount: Number(formData.get('offer')),
-      email: formData.get('email') as string,
-      phone: formData.get('phone') as string,
-      message: formData.get('message') as string,
-      domain_id: selectedDomain?.id,
-      seller_id: selectedDomain?.owner_id
-    };
-
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('请先登录');
+      }
+
+      const formData = new FormData(e.target as HTMLFormElement);
+      const data = {
+        amount: Number(formData.get('offer')),
+        email: formData.get('email') as string,
+        phone: formData.get('phone') as string,
+        message: formData.get('message') as string,
+        domain_id: selectedDomain?.id,
+        seller_id: selectedDomain?.owner_id,
+        buyer_id: user.id // Set the buyer_id to the current user's ID
+      };
+
       if (!selectedDomain?.owner_id) {
         throw new Error('域名没有所有者');
       }
@@ -41,6 +47,7 @@ const OfferForm: React.FC<OfferFormProps> = ({ isOpen, onClose, selectedDomain }
         .insert({
           domain_id: data.domain_id,
           seller_id: data.seller_id,
+          buyer_id: data.buyer_id,
           amount: data.amount,
           message: data.message
         });
