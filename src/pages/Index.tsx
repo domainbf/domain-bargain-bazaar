@@ -13,7 +13,7 @@ import FeaturedDomains from '@/components/FeaturedDomains';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingBag, ListPlus } from 'lucide-react';
+import { ShoppingBag, ListPlus, Loader2 } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 
 // Error Fallback Component
@@ -21,9 +21,21 @@ const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error; resetError
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a1c2e] to-[#2a2d4a] flex items-center justify-center">
       <div className="text-center p-8 bg-white/5 backdrop-blur-lg rounded-xl border border-white/10">
-        <h2 className="text-2xl font-bold text-white mb-4">Something went wrong</h2>
+        <h2 className="text-2xl font-bold text-white mb-4">出错了</h2>
         <p className="text-gray-300 mb-6">{error.message}</p>
-        <Button onClick={resetErrorBoundary}>Try again</Button>
+        <Button onClick={resetErrorBoundary}>重试</Button>
+      </div>
+    </div>
+  );
+};
+
+// Loading Component
+const LoadingState = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#1a1c2e] to-[#2a2d4a] flex items-center justify-center">
+      <div className="text-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-500 mx-auto mb-4" />
+        <p className="text-white">加载中...</p>
       </div>
     </div>
   );
@@ -34,7 +46,7 @@ const IndexContent = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const { data: session } = useQuery({
+  const { data: session, isLoading: sessionLoading } = useQuery({
     queryKey: ['session'],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -45,15 +57,15 @@ const IndexContent = () => {
       onError: (error: Error) => {
         console.error('Session fetch error:', error);
         toast({
-          title: "Error loading session",
-          description: "Please try refreshing the page",
+          title: "登录状态加载失败",
+          description: "请刷新页面重试",
           variant: "destructive",
         });
       }
     }
   });
 
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['profile', session?.user?.id],
     queryFn: async () => {
       if (!session?.user?.id) return null;
@@ -61,7 +73,7 @@ const IndexContent = () => {
         .from('profiles')
         .select('*')
         .eq('id', session.user.id)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data;
@@ -72,15 +84,15 @@ const IndexContent = () => {
       onError: (error: Error) => {
         console.error('Profile fetch error:', error);
         toast({
-          title: "Error loading profile",
-          description: "Please try refreshing the page",
+          title: "个人信息加载失败",
+          description: "请刷新页面重试",
           variant: "destructive",
         });
       }
     }
   });
 
-  const { data: siteSettings, error: settingsError } = useQuery({
+  const { data: siteSettings, isLoading: settingsLoading } = useQuery({
     queryKey: ['site-settings'],
     queryFn: async () => {
       try {
@@ -91,8 +103,8 @@ const IndexContent = () => {
         if (error) {
           console.error('Error fetching site settings:', error);
           toast({
-            title: "加载设置失败",
-            description: "无法加载网站设置，使用默认配置",
+            title: "设置加载失败",
+            description: "使用默认配置继续",
             variant: "destructive",
           });
           return {};
@@ -105,6 +117,10 @@ const IndexContent = () => {
     },
     retry: 1,
   });
+
+  if (sessionLoading || profileLoading || settingsLoading) {
+    return <LoadingState />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a1c2e] to-[#2a2d4a]">
