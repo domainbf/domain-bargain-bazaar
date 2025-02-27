@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import { useQuery } from '@tanstack/react-query';
@@ -84,6 +85,7 @@ const Dashboard = () => {
   const [profileEditOpen, setProfileEditOpen] = useState(false);
   const [activeView, setActiveView] = useState('overview');
   const [verificationType, setVerificationType] = useState('dns');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<DomainFormData>();
   const { register: registerEdit, handleSubmit: handleSubmitEdit, reset: resetEdit, setValue } = useForm<DomainFormData>();
@@ -165,6 +167,11 @@ const Dashboard = () => {
       setFavoriteDomainsIds(favoriteDomains.map((fav: any) => fav.domain_id));
     }
   }, [favoriteDomains]);
+
+  // Close mobile menu when changing active view
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [activeView]);
 
   const onAddDomain = async (data: DomainFormData) => {
     try {
@@ -428,16 +435,16 @@ const Dashboard = () => {
     return (
       <div className="space-y-6">
         {/* Profile overview */}
-        <Card className="p-6 bg-white/5 border-white/10">
-          <div className="flex justify-between items-start">
+        <Card className="p-4 sm:p-6 bg-white/5 border-white/10">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center text-white text-xl sm:text-2xl font-bold">
                 {profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : '?'}
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-white">{profile?.full_name || '未设置名称'}</h2>
-                <p className="text-gray-300">{profile?.bio || '您尚未添加个人简介'}</p>
-                <div className="flex items-center gap-2 mt-1">
+                <h2 className="text-lg sm:text-xl font-semibold text-white">{profile?.full_name || '未设置名称'}</h2>
+                <p className="text-gray-300 text-sm sm:text-base">{profile?.bio || '您尚未添加个人简介'}</p>
+                <div className="flex flex-wrap items-center gap-2 mt-1">
                   <Badge className={profile?.is_seller ? (profile?.seller_verified ? 'bg-green-600' : 'bg-yellow-600') : 'bg-gray-600'}>
                     {profile?.is_seller ? (profile?.seller_verified ? '已认证卖家' : '卖家(未认证)') : '买家'}
                   </Badge>
@@ -451,53 +458,54 @@ const Dashboard = () => {
               variant="outline" 
               size="sm"
               onClick={handleEditProfileClick}
-              className="border-gray-700 text-gray-300 hover:bg-gray-800"
+              className="sm:self-start border-gray-700 text-gray-300 hover:bg-gray-800"
             >
+              <UserCircle className="mr-2 h-4 w-4" />
               编辑资料
             </Button>
           </div>
         </Card>
 
         {/* Stats overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="p-6 bg-white/5 border-white/10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <Card className="p-4 sm:p-6 bg-white/5 border-white/10">
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="text-gray-400 text-sm">我的域名</h3>
-                <p className="text-3xl font-bold text-white mt-1">{totalDomains}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-white mt-1">{totalDomains}</p>
               </div>
-              <div className="p-3 bg-blue-500/20 rounded-lg">
-                <Globe className="h-6 w-6 text-blue-400" />
+              <div className="p-2 sm:p-3 bg-blue-500/20 rounded-lg">
+                <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
               </div>
             </div>
-            <div className="mt-4 flex gap-2">
+            <div className="mt-4 flex flex-wrap gap-2">
               <Badge className="bg-green-600">{availableDomains} 可售</Badge>
               <Badge className="bg-blue-600">{soldDomains} 已售</Badge>
             </div>
           </Card>
           
-          <Card className="p-6 bg-white/5 border-white/10">
+          <Card className="p-4 sm:p-6 bg-white/5 border-white/10">
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="text-gray-400 text-sm">总收入</h3>
-                <p className="text-3xl font-bold text-white mt-1">$0</p>
+                <p className="text-2xl sm:text-3xl font-bold text-white mt-1">$0</p>
               </div>
-              <div className="p-3 bg-green-500/20 rounded-lg">
-                <DollarSign className="h-6 w-6 text-green-400" />
+              <div className="p-2 sm:p-3 bg-green-500/20 rounded-lg">
+                <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
               </div>
             </div>
             <Progress value={0} className="h-2 mt-4" />
             <p className="text-xs text-gray-400 mt-1">完成目标: 0%</p>
           </Card>
           
-          <Card className="p-6 bg-white/5 border-white/10">
+          <Card className="p-4 sm:p-6 bg-white/5 border-white/10">
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="text-gray-400 text-sm">卖家信誉</h3>
-                <p className="text-3xl font-bold text-white mt-1">{profile?.seller_rating || '暂无'}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-white mt-1">{profile?.seller_rating || '暂无'}</p>
               </div>
-              <div className="p-3 bg-amber-500/20 rounded-lg">
-                <Shield className="h-6 w-6 text-amber-400" />
+              <div className="p-2 sm:p-3 bg-amber-500/20 rounded-lg">
+                <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400" />
               </div>
             </div>
             <div className="mt-4 flex gap-2">
@@ -509,24 +517,24 @@ const Dashboard = () => {
         </div>
 
         {/* Recent activity */}
-        <Card className="p-6 bg-white/5 border-white/10">
-          <h2 className="text-xl font-semibold text-white mb-4">近期活动</h2>
+        <Card className="p-4 sm:p-6 bg-white/5 border-white/10">
+          <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">近期活动</h2>
           {totalDomains > 0 ? (
             <div className="space-y-3">
               {myDomains?.slice(0, 3).map((domain: any) => (
                 <div key={domain.id} className="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
                   <div className="flex items-center gap-3">
-                    <Globe className="h-5 w-5 text-blue-400" />
-                    <div>
-                      <p className="font-medium text-white">{domain.name}</p>
-                      <p className="text-sm text-gray-400">添加于 {new Date(domain.created_at).toLocaleDateString()}</p>
+                    <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
+                    <div className="overflow-hidden">
+                      <p className="font-medium text-white text-sm sm:text-base truncate">{domain.name}</p>
+                      <p className="text-xs sm:text-sm text-gray-400">添加于 {new Date(domain.created_at).toLocaleDateString()}</p>
                     </div>
                   </div>
-                  <div className="flex gap-1">
-                    <Badge className={domain.status === 'available' ? 'bg-green-600' : 'bg-blue-600'}>
+                  <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 ml-2">
+                    <Badge className={`${domain.status === 'available' ? 'bg-green-600' : 'bg-blue-600'} text-xs`}>
                       {domain.status === 'available' ? '可售' : '已售'}
                     </Badge>
-                    <span className="font-semibold text-blue-400">${domain.price}</span>
+                    <span className="font-semibold text-blue-400 text-sm sm:text-base">${domain.price.toLocaleString()}</span>
                   </div>
                 </div>
               ))}
@@ -552,8 +560,8 @@ const Dashboard = () => {
   const renderDomains = () => {
     return (
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-white">我的域名</h2>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h2 className="text-lg sm:text-xl font-semibold text-white">我的域名</h2>
           <Button 
             onClick={() => setAddDomainOpen(true)}
             className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white"
@@ -570,41 +578,41 @@ const Dashboard = () => {
               
               return (
                 <Card key={domain.id} className="bg-white/5 border-white/10 overflow-hidden">
-                  <div className="p-6 flex flex-col md:flex-row justify-between md:items-center gap-4">
+                  <div className="p-4 sm:p-6 flex flex-col md:flex-row justify-between md:items-center gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="text-lg font-medium text-white">{domain.name}</h3>
-                        <Badge className={domain.status === 'available' ? 'bg-green-600' : 'bg-blue-600'}>
+                        <h3 className="text-base sm:text-lg font-medium text-white">{domain.name}</h3>
+                        <Badge className={`${domain.status === 'available' ? 'bg-green-600' : 'bg-blue-600'} text-xs`}>
                           {domain.status === 'available' ? '可售' : '已售'}
                         </Badge>
                         {domain.is_featured && (
-                          <Badge className="bg-amber-600">精选</Badge>
+                          <Badge className="bg-amber-600 text-xs">精选</Badge>
                         )}
                         {domain.verification_status === 'verified' && (
-                          <Badge className="bg-teal-600 flex items-center gap-1">
+                          <Badge className="bg-teal-600 flex items-center gap-1 text-xs">
                             <CheckCircle2 className="h-3 w-3" />
                             已验证
                           </Badge>
                         )}
                       </div>
-                      <p className="text-gray-300 text-sm mt-1">{domain.description || '无描述'}</p>
+                      <p className="text-gray-300 text-xs sm:text-sm mt-1">{domain.description || '无描述'}</p>
                       <div className="flex flex-wrap gap-2 mt-2">
                         {domain.category && (
-                          <Badge variant="outline" className="border-gray-700 text-gray-300">
+                          <Badge variant="outline" className="border-gray-700 text-gray-300 text-xs">
                             {domain.category}
                           </Badge>
                         )}
                         {domain.keywords && domain.keywords.map((keyword: string, index: number) => (
-                          <Badge key={index} variant="outline" className="border-gray-700 text-gray-300">
+                          <Badge key={index} variant="outline" className="border-gray-700 text-gray-300 text-xs">
                             {keyword}
                           </Badge>
                         ))}
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xl font-bold text-blue-400">${domain.price.toLocaleString()}</div>
+                      <div className="text-lg sm:text-xl font-bold text-blue-400">${domain.price.toLocaleString()}</div>
                       {domain.minimum_offer && (
-                        <div className="text-sm text-gray-400">最低出价: ${domain.minimum_offer.toLocaleString()}</div>
+                        <div className="text-xs sm:text-sm text-gray-400">最低出价: ${domain.minimum_offer.toLocaleString()}</div>
                       )}
                     </div>
                   </div>
@@ -612,47 +620,47 @@ const Dashboard = () => {
                   <Separator className="bg-white/10" />
                   
                   <div className="p-4 bg-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div className="flex gap-6 w-full md:w-auto">
+                    <div className="flex gap-4 sm:gap-6 w-full md:w-auto">
                       <div className="text-center">
-                        <p className="text-sm text-gray-400">流量</p>
-                        <p className="font-semibold text-white">{analytics.views}</p>
+                        <p className="text-xs sm:text-sm text-gray-400">流量</p>
+                        <p className="text-sm sm:text-base font-semibold text-white">{analytics.views}</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-sm text-gray-400">报价</p>
-                        <p className="font-semibold text-white">{analytics.offers}</p>
+                        <p className="text-xs sm:text-sm text-gray-400">报价</p>
+                        <p className="text-sm sm:text-base font-semibold text-white">{analytics.offers}</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-sm text-gray-400">收藏</p>
-                        <p className="font-semibold text-white">{analytics.favorites}</p>
+                        <p className="text-xs sm:text-sm text-gray-400">收藏</p>
+                        <p className="text-sm sm:text-base font-semibold text-white">{analytics.favorites}</p>
                       </div>
                     </div>
                     
-                    <div className="flex gap-2 w-full md:w-auto justify-end">
+                    <div className="flex flex-wrap gap-2 w-full md:w-auto justify-center md:justify-end">
                       <Button 
                         variant="outline" 
                         size="sm"
-                        className="border-gray-700 text-gray-300 hover:bg-gray-800"
+                        className="border-gray-700 text-gray-300 hover:bg-gray-800 text-xs"
                         onClick={() => handleVerifyClick(domain)}
                       >
-                        <Shield className="h-4 w-4 mr-1" />
+                        <Shield className="h-3 w-3 mr-1" />
                         验证
                       </Button>
                       <Button 
                         variant="outline" 
                         size="sm"
                         onClick={() => handleEditClick(domain)}
-                        className="border-gray-700 text-gray-300 hover:bg-gray-800"
+                        className="border-gray-700 text-gray-300 hover:bg-gray-800 text-xs"
                       >
-                        <Edit className="h-4 w-4 mr-1" />
+                        <Edit className="h-3 w-3 mr-1" />
                         编辑
                       </Button>
                       <Button 
                         variant="outline" 
                         size="sm"
                         onClick={() => handleDeleteClick(domain)}
-                        className="border-red-900 text-red-400 hover:bg-red-900/20"
+                        className="border-red-900 text-red-400 hover:bg-red-900/20 text-xs"
                       >
-                        <Trash2 className="h-4 w-4 mr-1" />
+                        <Trash2 className="h-3 w-3 mr-1" />
                         删除
                       </Button>
                     </div>
@@ -663,7 +671,7 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className="text-center py-12 bg-white/5 rounded-lg border border-white/10">
-            <Globe className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <Globe className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-300 mb-4">您还没有添加域名</p>
             <Button 
               onClick={() => setAddDomainOpen(true)}
@@ -680,10 +688,10 @@ const Dashboard = () => {
   const renderSettings = () => {
     return (
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-white">账户设置</h2>
+        <h2 className="text-lg sm:text-xl font-semibold text-white">账户设置</h2>
         
-        <Card className="p-6 bg-white/5 border-white/10">
-          <h3 className="text-lg font-medium text-white mb-4">个人信息</h3>
+        <Card className="p-4 sm:p-6 bg-white/5 border-white/10">
+          <h3 className="text-base sm:text-lg font-medium text-white mb-4">个人信息</h3>
           
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -724,27 +732,26 @@ const Dashboard = () => {
           </div>
         </Card>
         
-        <Card className="p-6 bg-white/5 border-white/10">
-          <h3 className="text-lg font-medium text-white mb-4">卖家设置</h3>
+        <Card className="p-4 sm:p-6 bg-white/5 border-white/10">
+          <h3 className="text-base sm:text-lg font-medium text-white mb-4">卖家设置</h3>
           
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <div className="text-base font-medium text-white">卖家账号</div>
-                <div className="text-sm text-gray-400">启用后可以出售域名</div>
+                <div className="text-sm sm:text-base font-medium text-white">卖家账号</div>
+                <div className="text-xs sm:text-sm text-gray-400">启用后可以出售域名</div>
               </div>
               <Switch 
                 checked={profile?.is_seller || false}
                 disabled
-  
                 className="bg-gray-800 data-[state=checked]:bg-blue-600"
               />
             </div>
             
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <div className="text-base font-medium text-white">卖家验证</div>
-                <div className="text-sm text-gray-400">提高信誉度和交易安全性</div>
+                <div className="text-sm sm:text-base font-medium text-white">卖家验证</div>
+                <div className="text-xs sm:text-sm text-gray-400">提高信誉度和交易安全性</div>
               </div>
               <Badge className={profile?.seller_verified ? 'bg-green-600' : 'bg-yellow-600'}>
                 {profile?.seller_verified ? '已验证' : '未验证'}
@@ -761,12 +768,12 @@ const Dashboard = () => {
           </div>
         </Card>
         
-        <Card className="p-6 bg-white/5 border-white/10">
-          <h3 className="text-lg font-medium text-white mb-4">通知设置</h3>
+        <Card className="p-4 sm:p-6 bg-white/5 border-white/10">
+          <h3 className="text-base sm:text-lg font-medium text-white mb-4">通知设置</h3>
           
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-base font-medium text-white" htmlFor="email_notifications">
+              <label className="text-sm sm:text-base font-medium text-white" htmlFor="email_notifications">
                 邮件通知
               </label>
               <Switch 
@@ -777,7 +784,7 @@ const Dashboard = () => {
             </div>
             
             <div className="flex items-center justify-between">
-              <label className="text-base font-medium text-white" htmlFor="offer_notifications">
+              <label className="text-sm sm:text-base font-medium text-white" htmlFor="offer_notifications">
                 收到报价通知
               </label>
               <Switch 
@@ -788,7 +795,7 @@ const Dashboard = () => {
             </div>
             
             <div className="flex items-center justify-between">
-              <label className="text-base font-medium text-white" htmlFor="purchase_notifications">
+              <label className="text-sm sm:text-base font-medium text-white" htmlFor="purchase_notifications">
                 交易成功通知
               </label>
               <Switch 
@@ -807,14 +814,24 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black">
       <Navigation />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-white">用户中心</h1>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">用户中心</h1>
+          
+          {/* Mobile menu toggle */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="sm:hidden border-gray-700 text-gray-300 hover:bg-gray-800 w-full"
+          >
+            {isMobileMenuOpen ? '隐藏菜单' : '显示菜单'}
+          </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Sidebar */}
-          <div className="md:col-span-1">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
+          {/* Sidebar - Always visible on md+ screens, toggleable on mobile */}
+          <div className={`${isMobileMenuOpen ? 'block' : 'hidden'} md:block md:col-span-1`}>
             <Card className="bg-white/5 border-white/10 p-4">
               <div className="space-y-1">
                 <Button
@@ -827,4 +844,590 @@ const Dashboard = () => {
                 </Button>
                 <Button
                   variant={activeView === 'domains' ? 'secondary' : 'ghost'}
-                  className={`w-full justify-start ${activeView === 'domains' ? 'bg-white/10 text-white' : 'text-gray-40
+                  className={`w-full justify-start ${activeView === 'domains' ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white'}`}
+                  onClick={() => setActiveView('domains')}
+                >
+                  <Globe className="mr-2 h-4 w-4" />
+                  我的域名
+                </Button>
+                <Button
+                  variant={activeView === 'purchases' ? 'secondary' : 'ghost'}
+                  className={`w-full justify-start ${activeView === 'purchases' ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white'}`}
+                  onClick={() => setActiveView('purchases')}
+                >
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  购买记录
+                </Button>
+                <Button
+                  variant={activeView === 'sales' ? 'secondary' : 'ghost'}
+                  className={`w-full justify-start ${activeView === 'sales' ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white'}`}
+                  onClick={() => setActiveView('sales')}
+                >
+                  <DollarSign className="mr-2 h-4 w-4" />
+                  销售记录
+                </Button>
+                <Button
+                  variant={activeView === 'offers' ? 'secondary' : 'ghost'}
+                  className={`w-full justify-start ${activeView === 'offers' ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white'}`}
+                  onClick={() => setActiveView('offers')}
+                >
+                  <Heart className="mr-2 h-4 w-4" />
+                  我的报价
+                </Button>
+                <Button
+                  variant={activeView === 'settings' ? 'secondary' : 'ghost'}
+                  className={`w-full justify-start ${activeView === 'settings' ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white'}`}
+                  onClick={() => setActiveView('settings')}
+                >
+                  <Settings2 className="mr-2 h-4 w-4" />
+                  账户设置
+                </Button>
+              </div>
+
+              <Separator className="my-4 bg-white/10" />
+
+              <div className="rounded-lg bg-blue-900/20 p-4 border border-blue-800/30">
+                <h3 className="font-medium text-blue-300 flex items-center text-sm">
+                  <Shield className="mr-2 h-4 w-4" />
+                  卖家状态
+                </h3>
+                <div className="mt-2 space-y-2">
+                  <div className="flex justify-between text-xs sm:text-sm">
+                    <span className="text-gray-400">验证状态</span>
+                    <Badge className={`${profile?.seller_verified ? 'bg-green-600' : 'bg-yellow-600'} text-xs`}>
+                      {profile?.seller_verified ? '已验证' : '未验证'}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between text-xs sm:text-sm">
+                    <span className="text-gray-400">完成交易</span>
+                    <span className="text-white">{profile?.total_sales || 0}</span>
+                  </div>
+                  <div className="flex justify-between text-xs sm:text-sm">
+                    <span className="text-gray-400">信誉评分</span>
+                    <span className="text-white">{profile?.seller_rating || '暂无'}</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Main content */}
+          <div className="md:col-span-3">
+            {activeView === 'overview' && renderOverview()}
+            {activeView === 'domains' && renderDomains()}
+            {activeView === 'purchases' && (
+              <Card className="p-4 sm:p-6 bg-white/5 border-white/10">
+                <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">购买记录</h2>
+                <PurchaseHistory />
+              </Card>
+            )}
+            {activeView === 'sales' && (
+              <Card className="p-4 sm:p-6 bg-white/5 border-white/10">
+                <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">销售记录</h2>
+                <DomainSalesList />
+              </Card>
+            )}
+            {activeView === 'offers' && (
+              <Card className="p-4 sm:p-6 bg-white/5 border-white/10">
+                <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">我的报价</h2>
+                <OfferList />
+              </Card>
+            )}
+            {activeView === 'settings' && renderSettings()}
+          </div>
+        </div>
+      </main>
+
+      {/* 添加域名对话框 */}
+      <Dialog open={addDomainOpen} onOpenChange={setAddDomainOpen}>
+        <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-md sm:max-w-2xl mx-4 sm:mx-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-white">添加域名</DialogTitle>
+            <DialogDescription className="text-gray-300">
+              填写域名信息，添加到域名市场进行销售
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={handleSubmit(onAddDomain)} className="space-y-4 mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">域名</label>
+                <Input
+                  {...register('name', { required: true })}
+                  className="bg-gray-800 border-gray-700 text-white"
+                  placeholder="example.com"
+                />
+                {errors.name && <p className="text-red-400 text-xs mt-1">请输入域名</p>}
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">价格 (USD)</label>
+                <Input
+                  {...register('price', { required: true, min: 1 })}
+                  type="number"
+                  className="bg-gray-800 border-gray-700 text-white"
+                  placeholder="1000"
+                />
+                {errors.price && <p className="text-red-400 text-xs mt-1">请输入有效价格</p>}
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">分类</label>
+                <Select onValueChange={(value) => setValue('category', value)}>
+                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                    <SelectValue placeholder="选择分类" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-700 text-white">
+                    <SelectItem value="standard">标准域名</SelectItem>
+                    <SelectItem value="premium">精品域名</SelectItem>
+                    <SelectItem value="business">商业域名</SelectItem>
+                    <SelectItem value="numeric">数字域名</SelectItem>
+                    <SelectItem value="short">短域名</SelectItem>
+                    <SelectItem value="brandable">品牌域名</SelectItem>
+                    <SelectItem value="keyword">关键词域名</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">销售类型</label>
+                <Select onValueChange={(value) => setValue('sale_type', value)}>
+                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                    <SelectValue placeholder="选择销售类型" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-700 text-white">
+                    <SelectItem value="both">一口价和报价</SelectItem>
+                    <SelectItem value="fixed">仅一口价</SelectItem>
+                    <SelectItem value="offer">仅接受报价</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">关键词 (用逗号分隔)</label>
+                <Input
+                  {...register('keywords')}
+                  className="bg-gray-800 border-gray-700 text-white"
+                  placeholder="关键词1, 关键词2"
+                />
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">最低接受报价 (USD)</label>
+                <Input
+                  {...register('minimum_offer')}
+                  type="number"
+                  className="bg-gray-800 border-gray-700 text-white"
+                  placeholder="800"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium text-gray-200 mb-1 block">描述</label>
+              <Textarea
+                {...register('description')}
+                className="bg-gray-800 border-gray-700 text-white"
+                placeholder="域名描述信息"
+                rows={3}
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">Meta 标题</label>
+                <Input
+                  {...register('meta_title')}
+                  className="bg-gray-800 border-gray-700 text-white"
+                  placeholder="SEO 标题"
+                />
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">Meta 描述</label>
+                <Input
+                  {...register('meta_description')}
+                  className="bg-gray-800 border-gray-700 text-white"
+                  placeholder="SEO 描述"
+                />
+              </div>
+            </div>
+            
+            <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setAddDomainOpen(false)}
+                className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white w-full sm:w-auto"
+              >
+                取消
+              </Button>
+              <Button 
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? '提交中...' : '添加域名'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* 编辑域名对话框 */}
+      <Dialog open={editDomainOpen} onOpenChange={setEditDomainOpen}>
+        <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-md sm:max-w-2xl mx-4 sm:mx-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-white">编辑域名</DialogTitle>
+            <DialogDescription className="text-gray-300">
+              修改域名信息
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={handleSubmitEdit(onEditDomain)} className="space-y-4 mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">域名</label>
+                <Input
+                  {...registerEdit('name', { required: true })}
+                  className="bg-gray-800 border-gray-700 text-white"
+                  placeholder="example.com"
+                />
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">价格 (USD)</label>
+                <Input
+                  {...registerEdit('price', { required: true, min: 1 })}
+                  type="number"
+                  className="bg-gray-800 border-gray-700 text-white"
+                  placeholder="1000"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">分类</label>
+                <Select 
+                  defaultValue={selectedDomain?.category || "standard"}
+                  onValueChange={(value) => setValue('category', value)}
+                >
+                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                    <SelectValue placeholder="选择分类" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-700 text-white">
+                    <SelectItem value="standard">标准域名</SelectItem>
+                    <SelectItem value="premium">精品域名</SelectItem>
+                    <SelectItem value="business">商业域名</SelectItem>
+                    <SelectItem value="numeric">数字域名</SelectItem>
+                    <SelectItem value="short">短域名</SelectItem>
+                    <SelectItem value="brandable">品牌域名</SelectItem>
+                    <SelectItem value="keyword">关键词域名</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">销售类型</label>
+                <Select 
+                  defaultValue={selectedDomain?.sale_type || "both"}
+                  onValueChange={(value) => setValue('sale_type', value)}
+                >
+                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                    <SelectValue placeholder="选择销售类型" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-700 text-white">
+                    <SelectItem value="both">一口价和报价</SelectItem>
+                    <SelectItem value="fixed">仅一口价</SelectItem>
+                    <SelectItem value="offer">仅接受报价</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">关键词 (用逗号分隔)</label>
+                <Input
+                  {...registerEdit('keywords')}
+                  className="bg-gray-800 border-gray-700 text-white"
+                  placeholder="关键词1, 关键词2"
+                />
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">最低接受报价 (USD)</label>
+                <Input
+                  {...registerEdit('minimum_offer')}
+                  type="number"
+                  className="bg-gray-800 border-gray-700 text-white"
+                  placeholder="800"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium text-gray-200 mb-1 block">描述</label>
+              <Textarea
+                {...registerEdit('description')}
+                className="bg-gray-800 border-gray-700 text-white"
+                placeholder="域名描述信息"
+                rows={3}
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">Meta 标题</label>
+                <Input
+                  {...registerEdit('meta_title')}
+                  className="bg-gray-800 border-gray-700 text-white"
+                  placeholder="SEO 标题"
+                />
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-200 mb-1 block">Meta 描述</label>
+                <Input
+                  {...registerEdit('meta_description')}
+                  className="bg-gray-800 border-gray-700 text-white"
+                  placeholder="SEO 描述"
+                />
+              </div>
+            </div>
+            
+            <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setEditDomainOpen(false)}
+                className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white w-full sm:w-auto"
+              >
+                取消
+              </Button>
+              <Button 
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
+              >
+                保存修改
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* 删除确认对话框 */}
+      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-md mx-4 sm:mx-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-white flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-red-400" />
+              确认删除
+            </DialogTitle>
+            <DialogDescription className="text-gray-300">
+              您确定要删除域名 <span className="text-white font-medium">{selectedDomain?.name}</span> 吗？此操作无法撤销。
+            </DialogDescription>
+          </DialogHeader>
+          
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setDeleteConfirmOpen(false)}
+              className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white w-full sm:w-auto"
+            >
+              取消
+            </Button>
+            <Button 
+              type="button"
+              onClick={onDeleteDomain}
+              className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto"
+            >
+              确认删除
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 域名验证对话框 */}
+      <Dialog open={verificationOpen} onOpenChange={setVerificationOpen}>
+        <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-md mx-4 sm:mx-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-white flex items-center gap-2">
+              <Shield className="h-5 w-5 text-blue-400" />
+              域名所有权验证
+            </DialogTitle>
+            <DialogDescription className="text-gray-300">
+              验证您对域名 <span className="text-white font-medium">{selectedDomain?.name}</span> 的所有权
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={handleSubmitVerification(onVerifyDomain)} className="space-y-4 mt-4">
+            <div>
+              <label className="text-sm font-medium text-gray-200 mb-1 block">验证方式</label>
+              <Select 
+                onValueChange={setVerificationType}
+                defaultValue={verificationType}
+              >
+                <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                  <SelectValue placeholder="选择验证方式" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-700 text-white">
+                  <SelectItem value="dns">DNS TXT 记录验证</SelectItem>
+                  <SelectItem value="html">HTML 文件验证</SelectItem>
+                  <SelectItem value="whois">WHOIS 记录验证</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="bg-blue-900/30 p-4 rounded-lg border border-blue-800/30">
+              <h4 className="text-white font-medium mb-2 text-sm">验证说明</h4>
+              <p className="text-xs sm:text-sm text-blue-200 mb-3">
+                请添加以下 TXT 记录到您的域名 DNS 设置中，验证您的域名所有权：
+              </p>
+              <div className="bg-gray-900 p-3 rounded-md flex justify-between items-center">
+                <code className="text-green-400 text-xs sm:text-sm overflow-auto">verify-domain-ownership={selectedDomain?.id?.slice(0, 8)}</code>
+                <Button 
+                  type="button"
+                  variant="ghost" 
+                  size="sm"
+                  className="text-gray-400 hover:text-white ml-2 flex-shrink-0"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`verify-domain-ownership=${selectedDomain?.id?.slice(0, 8)}`);
+                    toast({
+                      title: "已复制到剪贴板",
+                      duration: 2000,
+                    });
+                  }}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium text-gray-200 mb-1 block">验证值</label>
+              <Input
+                {...registerVerification('verification_value', { required: true })}
+                className="bg-gray-800 border-gray-700 text-white"
+                placeholder="验证完成后输入 'confirm'"
+              />
+              {verificationErrors.verification_value && (
+                <p className="text-red-400 text-xs mt-1">请输入验证值</p>
+              )}
+            </div>
+            
+            <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setVerificationOpen(false)}
+                className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white w-full sm:w-auto"
+              >
+                取消
+              </Button>
+              <Button 
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
+              >
+                提交验证
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* 编辑个人资料对话框 */}
+      <Dialog open={profileEditOpen} onOpenChange={setProfileEditOpen}>
+        <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-md mx-4 sm:mx-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-white flex items-center gap-2">
+              <UserCircle className="h-5 w-5 text-blue-400" />
+              编辑个人资料
+            </DialogTitle>
+            <DialogDescription className="text-gray-300">
+              更新您的个人资料信息
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={handleSubmitProfile(onUpdateProfile)} className="space-y-4 mt-4">
+            <div>
+              <label className="text-sm font-medium text-gray-200 mb-1 block">姓名</label>
+              <Input
+                {...registerProfile('full_name')}
+                defaultValue={profile?.full_name || ''}
+                className="bg-gray-800 border-gray-700 text-white"
+                placeholder="您的姓名"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium text-gray-200 mb-1 block">联系邮箱</label>
+              <Input
+                {...registerProfile('contact_email')}
+                defaultValue={profile?.contact_email || ''}
+                className="bg-gray-800 border-gray-700 text-white"
+                placeholder="您的联系邮箱"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium text-gray-200 mb-1 block">联系电话</label>
+              <Input
+                {...registerProfile('contact_phone')}
+                defaultValue={profile?.contact_phone || ''}
+                className="bg-gray-800 border-gray-700 text-white"
+                placeholder="您的联系电话"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium text-gray-200 mb-1 block">公司名称</label>
+              <Input
+                {...registerProfile('company_name')}
+                defaultValue={profile?.company_name || ''}
+                className="bg-gray-800 border-gray-700 text-white"
+                placeholder="您的公司名称（可选）"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium text-gray-200 mb-1 block">个人简介</label>
+              <Textarea
+                {...registerProfile('bio')}
+                defaultValue={profile?.bio || ''}
+                className="bg-gray-800 border-gray-700 text-white"
+                placeholder="请简短介绍一下您自己"
+                rows={3}
+              />
+            </div>
+            
+            <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setProfileEditOpen(false)}
+                className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white w-full sm:w-auto"
+              >
+                取消
+              </Button>
+              <Button 
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
+              >
+                保存修改
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default Dashboard;
