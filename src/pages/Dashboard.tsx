@@ -86,6 +86,7 @@ const Dashboard = () => {
   const [favoriteDomainsIds, setFavoriteDomainsIds] = useState<string[]>([]);
   const [profileEditOpen, setProfileEditOpen] = useState(false);
   const [activeView, setActiveView] = useState('overview');
+  const [verificationType, setVerificationType] = useState('dns');
   
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<DomainFormData>();
   const { register: registerEdit, handleSubmit: handleSubmitEdit, reset: resetEdit, setValue } = useForm<DomainFormData>();
@@ -291,7 +292,7 @@ const Dashboard = () => {
         .insert({
           domain_id: selectedDomain.id,
           user_id: user.id,
-          verification_type: data.verification_type,
+          verification_type: verificationType,
           verification_data: { value: data.verification_value }
         });
 
@@ -1256,7 +1257,7 @@ const Dashboard = () => {
             <div>
               <label className="text-sm font-medium text-gray-200 mb-1 block">验证方式</label>
               <Select 
-                onValueChange={(value) => setValue('verification_type', value)}
+                onValueChange={(value) => setVerificationType(value)}
                 defaultValue="dns"
               >
                 <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
