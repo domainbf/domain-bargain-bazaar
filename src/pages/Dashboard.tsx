@@ -70,8 +70,6 @@ interface ProfileFormData {
 }
 
 interface VerificationFormData {
-  domain_name: string;
-  verification_type: string;
   verification_value: string;
 }
 
@@ -1257,7 +1255,7 @@ const Dashboard = () => {
             <div>
               <label className="text-sm font-medium text-gray-200 mb-1 block">验证方式</label>
               <Select 
-                onValueChange={(value) => setVerificationType(value)}
+                onValueChange={setVerificationType}
                 defaultValue="dns"
               >
                 <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
