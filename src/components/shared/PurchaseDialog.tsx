@@ -76,8 +76,7 @@ const PurchaseDialog = ({
                 {t('domain.purchase.buy_now')}
               </Button>
               <Button 
-                variant="outline"
-                className="flex-1 border-gray-700 text-gray-200 hover:bg-gray-800 hover:text-white"
+                className="flex-1 bg-white text-gray-900 hover:bg-gray-100"
                 onClick={() => setMode('offer')}
               >
                 {t('domain.purchase.make_offer')}
