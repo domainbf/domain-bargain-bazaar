@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
@@ -6,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Domain } from '@/types/domain';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
+import { DollarSign, Mail, Phone, MessageSquare } from 'lucide-react';
 
 interface OfferFormData {
   amount: number;
@@ -81,54 +83,70 @@ export const OfferForm: React.FC<OfferFormProps> = ({ domain, onClose, onSubmit 
 
   return (
     <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-200 mb-2">
-          出价金额
-        </label>
-        <Input
-          type="number"
-          {...register('amount', { 
-            required: true,
-            min: domain.minimum_offer || domain.price * 0.8 
-          })}
-          className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400"
-        />
-        {errors.amount && (
-          <p className="text-red-400 text-sm mt-1">请输入有效金额</p>
-        )}
-      </div>
+      <div className="bg-gradient-to-r from-slate-800/80 to-slate-900/80 backdrop-blur-sm rounded-lg p-5 border border-white/10 shadow-lg">
+        <h3 className="text-xl font-semibold text-white mb-4">您的报价信息</h3>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-blue-300 mb-2">
+              <DollarSign className="h-4 w-4" />
+              出价金额
+            </label>
+            <div className="relative">
+              <Input
+                type="number"
+                {...register('amount', { 
+                  required: true,
+                  min: domain.minimum_offer || domain.price * 0.8 
+                })}
+                className="bg-slate-800/70 border-slate-700 text-white placeholder-gray-400 pl-7"
+              />
+              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+            </div>
+            {errors.amount && (
+              <p className="text-red-400 text-sm mt-1">请输入有效金额</p>
+            )}
+          </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-200 mb-2">
-          联系邮箱
-        </label>
-        <Input
-          type="email"
-          {...register('email', { required: true })}
-          className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400"
-        />
-      </div>
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-blue-300 mb-2">
+              <Mail className="h-4 w-4" />
+              联系邮箱
+            </label>
+            <Input
+              type="email"
+              {...register('email', { required: true })}
+              className="bg-slate-800/70 border-slate-700 text-white placeholder-gray-400"
+            />
+            {errors.email && (
+              <p className="text-red-400 text-sm mt-1">请输入有效邮箱</p>
+            )}
+          </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-200 mb-2">
-          联系电话
-        </label>
-        <Input
-          type="tel"
-          {...register('phone')}
-          className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400"
-        />
-      </div>
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-blue-300 mb-2">
+              <Phone className="h-4 w-4" />
+              联系电话
+            </label>
+            <Input
+              type="tel"
+              {...register('phone')}
+              className="bg-slate-800/70 border-slate-700 text-white placeholder-gray-400"
+            />
+          </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-200 mb-2">
-          留言信息
-        </label>
-        <Textarea
-          {...register('message')}
-          className="bg-gray-800/50 border-white/20 text-white placeholder-gray-400"
-          rows={4}
-        />
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-blue-300 mb-2">
+              <MessageSquare className="h-4 w-4" />
+              留言信息
+            </label>
+            <Textarea
+              {...register('message')}
+              className="bg-slate-800/70 border-slate-700 text-white placeholder-gray-400"
+              rows={3}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="flex gap-3">
@@ -142,7 +160,8 @@ export const OfferForm: React.FC<OfferFormProps> = ({ domain, onClose, onSubmit 
         <Button
           type="button"
           onClick={onClose}
-          className="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-700 border-blue-300"
+          variant="outline"
+          className="flex-1 bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
         >
           取消
         </Button>
