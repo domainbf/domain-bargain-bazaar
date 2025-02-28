@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +21,7 @@ import News from "./pages/StaticPage/Help/News";
 import Guide from "./pages/StaticPage/Help/Guide";
 import FAQ from "./pages/StaticPage/Help/FAQ";
 
+// Create and configure the QueryClient
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -27,6 +29,7 @@ const queryClient = new QueryClient({
       refetchOnMount: true,      // 组件挂载时重新获取数据
       refetchInterval: 30000,    // 每30秒自动刷新一次数据
       staleTime: 10000,         // 数据10秒后视为过期
+      retry: 1,                 // 请求失败时只重试一次
     },
   },
 });
@@ -35,7 +38,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
-      <Sonner />
+      <Sonner position="top-right" closeButton />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />

@@ -1,15 +1,19 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter
 } from "@/components/ui/dialog";
-import { Globe, DollarSign, ShieldCheck } from 'lucide-react';
+import { Globe, DollarSign, ShieldCheck, AlertCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import PayPalButton from '../PayPalButton';
 import { useTranslation } from '@/hooks/useTranslation';
 import OfferForm from '../OfferForm';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
 
 interface Domain {
   id: string;
@@ -26,9 +30,85 @@ interface PurchaseDialogProps {
 
 const PurchaseDialog = ({ domain, onOpenChange, onSuccess }: PurchaseDialogProps) => {
   const { t } = useTranslation();
-  const [showOfferForm, setShowOfferForm] = React.useState(false);
+  const { toast } = useToast();
+  const [showOfferForm, setShowOfferForm] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
   
   if (!domain) return null;
+
+  const handleBuyNow = async () => {
+    setIsProcessing(true);
+    setPaymentError(null);
+    
+    try {
+      // Here we would typically redirect to payment processing
+      // For now, just show a toast as a placeholder
+      toast({
+        title: "正在准备支付",
+        description: "请稍候，我们正在准备支付流程...",
+      });
+      
+      // Simulate payment process
+      setTimeout(() => {
+        setIsProcessing(false);
+      }, 1500);
+      
+    } catch (error) {
+      setIsProcessing(false);
+      setPaymentError("支付处理出错，请稍后再试");
+      console.error("Payment error:", error);
+    }
+  };
+
+  const handleOfferFormClose = () => {
+    setShowOfferForm(false);
+  };
+
+  const handlePayPalSuccess = async (details: any) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        // Record transaction
+        const { error } = await supabase.from('transactions').insert({
+          domain_id: domain.id,
+          buyer_id: user.id,
+          amount: domain.price,
+          payment_method: 'paypal',
+          payment_id: details.id,
+          status: 'completed'
+        });
+        
+        if (error) throw error;
+        
+        // Update domain status
+        const { error: domainError } = await supabase
+          .from('domains')
+          .update({ status: 'sold' })
+          .eq('id', domain.id);
+          
+        if (domainError) throw domainError;
+      }
+      
+      toast({
+        title: "购买成功!",
+        description: "恭喜您，域名购买成功!",
+        variant: "default",
+      });
+      
+      onSuccess();
+      onOpenChange(false);
+      
+    } catch (error: any) {
+      console.error("Transaction recording error:", error);
+      toast({
+        title: "错误",
+        description: error.message || "交易记录出错，请联系客服",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <Dialog open={!!domain} onOpenChange={onOpenChange}>
@@ -45,7 +125,7 @@ const PurchaseDialog = ({ domain, onOpenChange, onSuccess }: PurchaseDialogProps
         {showOfferForm ? (
           <OfferForm
             isOpen={showOfferForm}
-            onClose={() => setShowOfferForm(false)}
+            onClose={handleOfferFormClose}
             selectedDomain={domain}
           />
         ) : (
@@ -59,12 +139,20 @@ const PurchaseDialog = ({ domain, onOpenChange, onSuccess }: PurchaseDialogProps
               </div>
             </div>
 
+            {paymentError && (
+              <div className="bg-red-900/20 text-red-300 p-3 rounded-lg border border-red-900/40 flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-red-400" />
+                <p className="text-sm">{paymentError}</p>
+              </div>
+            )}
+
             <div className="grid gap-4">
               <Button 
                 className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-6"
-                onClick={() => {}}
+                onClick={handleBuyNow}
+                disabled={isProcessing}
               >
-                立即购买
+                {isProcessing ? "处理中..." : "立即购买"}
               </Button>
               <Button 
                 variant="outline"
@@ -78,7 +166,7 @@ const PurchaseDialog = ({ domain, onOpenChange, onSuccess }: PurchaseDialogProps
             <div className="bg-gray-800/50 p-4 rounded-lg backdrop-blur-sm border border-gray-700">
               <PayPalButton
                 amount={domain.price}
-                onSuccess={onSuccess}
+                onSuccess={handlePayPalSuccess}
               />
             </div>
 
